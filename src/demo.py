@@ -17,7 +17,8 @@ from typing import Any, Dict, List
 from src import scenarios as S
 
 INCIDENT_AT = 10
-INCIDENT_ROAD = ("INT_01", "INT_11")
+DEFAULT_CLOSED = [("INT_01", "INT_11")]       # roads closed in the default demo (both directions)
+INCIDENT_ROAD = DEFAULT_CLOSED[0]            # kept for the tests
 DURATION = 130
 COLOURS = ["#2563eb", "#16a34a", "#9333ea", "#ea580c", "#0891b2", "#db2777"]
 # name: (origin, destination, departure second)
@@ -25,15 +26,20 @@ TRACKED = {"Car 1": ("N1", "S1", 0), "Car 2": ("W1", "E1", 0), "Car 3": ("N0", "
            "Car 4": ("W0", "E2", 2), "Car 5": ("S1", "N1", 2), "Car 6": ("E2", "W0", 4)}
 
 
-def build():
+def build(closed=None):
+    closed = DEFAULT_CLOSED if closed is None else [tuple(c) for c in closed]
     sim = S.make_sim(3, 3)
     cars = {}
     for name, (o, d, dep) in TRACKED.items():
         cars[name] = sim.spawn_vehicle(o, d, departure_time=dep)
     tracked_ids = {v.agent_id for v in cars.values()}
     sim.spawn_poisson_demand(S.boundary_od_pairs(3, 3), 0.15, 60, random.Random(5))   # background traffic
-    sim.schedule(INCIDENT_AT, lambda s: [s.coordinator.report_incident(*INCIDENT_ROAD),
-                                         s.coordinator.report_incident(*INCIDENT_ROAD[::-1])])
+    def accident(s):
+        for a, b in closed:                      # a closed road is closed in both directions
+            s.coordinator.report_incident(a, b)
+            s.coordinator.report_incident(b, a)
+    if closed:
+        sim.schedule(INCIDENT_AT, accident)
     return sim, cars, tracked_ids
 
 
@@ -43,8 +49,10 @@ def _route(v) -> List[str]:
     return list(v.planned_path[max(0, start - (1 if v.current_segment is not None else 0)):])
 
 
-def record() -> Dict[str, Any]:
-    sim, cars, tracked_ids = build()
+def record(closed=None) -> Dict[str, Any]:
+    closed = DEFAULT_CLOSED if closed is None else [tuple(c) for c in closed]
+    both = {c for a, b in closed for c in ((a, b), (b, a))}
+    sim, cars, tracked_ids = build(closed)
     net = sim.network
     original = {n: list(v.planned_path) for n, v in cars.items()}
     last_path = dict(original)
@@ -60,11 +68,11 @@ def record() -> Dict[str, Any]:
                 frame["cars"][n] = [round(x), round(y), 1 if v.current_speed < 0.5 else 0, _route(v)]
                 if v.planned_path != last_path[n]:
                     old = last_path[n]
-                    hit = any(old[i:i + 2] == list(INCIDENT_ROAD) or old[i:i + 2] == list(INCIDENT_ROAD[::-1])
-                              for i in range(len(old) - 1))
+                    hit = any((old[i], old[i + 1]) in both for i in range(len(old) - 1))
                     J = lambda n: "J" + n[4:]
-                    why = (f"road {J(INCIDENT_ROAD[0])}-{J(INCIDENT_ROAD[1])} is closed and it was on the car's route"
-                           if hit else "the closed road was ahead on its route")
+                    shut = ", ".join(f"{J(a)}-{J(b)}" for a, b in closed)
+                    why = (f"a closed road ({shut}) was on the car's route"
+                           if hit else "a closed road was ahead on its route")
                     events.append({"t": t, "car": n, "old": old, "new": list(v.planned_path), "why": why})
                     last_path[n] = list(v.planned_path)
         for v in sim.vehicles:
@@ -76,7 +84,7 @@ def record() -> Dict[str, Any]:
         "nodes": {k: [round(p[0]), round(p[1])] for k, p in net.node_positions.items()},
         "roads": [[s.source, s.target] for s in net.segments.values()],
         "signals": list(sim.intersections),
-        "incident": {"t": INCIDENT_AT, "road": list(INCIDENT_ROAD)},
+        "incident": {"t": INCIDENT_AT, "roads": [list(c) for c in closed]},
         "cars": [{"name": n, "from": o, "to": d, "colour": COLOURS[i], "original": original[n]}
                  for i, (n, (o, d, _)) in enumerate(TRACKED.items())],
         "events": events, "frames": frames,

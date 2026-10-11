@@ -1,7 +1,4 @@
 # Smart Traffic Management System (STMS)
-
-**Live demo:** https://radha-krishna-19.github.io/foai/  (original routes vs re-routing after an accident)
-
 ### A multi-agent AI case study: 5 agent types, 5 team members, 43 automated tests
 
 Intersections, cars, ambulances, buses and a Traffic Management Centre are **independent agents**.
@@ -33,7 +30,8 @@ Each one senses, reasons and acts on its own, and they coordinate only through F
 
 ```
 pip install -r requirements.txt
-python run_demo.py                     # THE DEMO: opens demo.html in your browser (offline, one page)
+python run_demo.py                     # THE DEMO: local page; click roads to add/remove accidents
+python run_demo.py --static            # only write demo.html (default accident, no editing)
 python run_simulation.py --all         # every experiment as a table (about 1 minute)
 python run_simulation.py --scenario 3  # one experiment: 1, 2, 3, 4, 5, 6, 7, 8
 python run_simulation.py --protocol    # the FIPA-ACL message log
@@ -43,6 +41,9 @@ python generate_results.py             # re-create every number, chart and demo.
 ```
 
 ### What the demo page shows (and nothing more)
+
+Click any road to add an accident, click again to remove it; the real simulation re-runs.
+Team work split: see `TEAM_SPLIT.md`.
 
 A 3x3 city. Six cars each start on their cheapest route (A*). At t = 10 s an accident closes one road
 and the traffic centre broadcasts it. Click a car to see its **original route (dashed)** and, if it had to
