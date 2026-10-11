@@ -1,0 +1,19 @@
+A* trace on a congested 3x3 grid, W0 -> E2   (v_max = 13.88 m/s, h = Euclidean/v_max)
+Blocked road(s): INT_10->INT_11
+
+step  expand      g(n)    h(n)    f(n)   frontier (f, node) after pop
+   1  W0           0.0   64.44   64.44   
+   2  INT_00     14.41   51.95   66.37   
+   3  INT_01     28.82   40.76   69.58   (74.5,INT_10), (90.3,N0)
+   4  INT_10     28.96   45.57   74.52   (75.5,INT_02), (77.2,INT_11), (90.3,N0), (95.2,N1)
+   5  INT_02     43.23   32.22   75.45   (77.2,INT_11), (87.5,INT_20), (90.3,N0), (95.2,N1), (102.8,W1)
+   6  INT_11     44.99   32.22   77.21   (78.0,INT_12), (86.8,E0), (87.5,INT_20), (90.3,N0), (95.2,N1), (102.8,W1)
+   7  INT_12     57.64   20.38   78.02   (86.8,E0), (87.5,INT_20), (89.1,INT_21), (90.3,N0), (95.2,N1), (102.8,W1)
+   8  INT_22     72.05   14.41   86.46   (86.5,E1), (86.8,E0), (87.5,INT_20), (89.1,INT_21), (90.3,N0), (95.2,N1)
+   9  E2         86.46     0.0   86.46   (86.5,E1), (86.8,E0), (87.5,INT_20), (89.1,INT_21), (90.3,N0), (95.2,N1)
+
+A*  path: W0 -> INT_00 -> INT_01 -> INT_02 -> INT_12 -> INT_22 -> E2
+    cost = 86.46 s, nodes expanded = 9
+UCS path: W0 -> INT_00 -> INT_01 -> INT_02 -> INT_12 -> INT_22 -> E2
+    cost = 86.46 s, nodes expanded = 20
+Same optimal cost; A* expands fewer nodes because h(n) steers it toward the goal.

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STMS demo - how cars re-route</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#6a7385;--line:#d9dde5;--road:#c9ced8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,Arial,sans-serif}
+header{padding:14px 20px;background:#1d2330;color:#fff}header h1{margin:0;font-size:18px}header p{margin:2px 0 0;color:#b9c0cf;font-size:13px}
+main{display:grid;grid-template-columns:minmax(380px,640px) 1fr;gap:16px;padding:16px 20px;max-width:1200px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+canvas{width:100%;height:auto;display:block;background:#fff;border-radius:8px}
+.ctl{display:flex;gap:8px;align-items:center;margin-top:10px}
+.ctl button{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:14px;cursor:pointer}
+.ctl input{flex:1}.ctl span{min-width:56px;text-align:right;color:var(--mute);font-variant-numeric:tabular-nums}
+#banner{margin:0 0 12px;padding:10px 12px;border-radius:8px;background:#eef2ff;border:1px solid #cdd6ff}
+#banner.alert{background:#fff1f0;border-color:#ffc9c4}
+h2{font-size:15px;margin:0 0 8px}
+.car{display:grid;grid-template-columns:14px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+.car:first-of-type{border-top:0}.car{cursor:pointer;padding-left:6px}.car.sel{background:#f1f5ff;border-radius:6px}.dot{width:12px;height:12px;border-radius:50%;margin-top:4px}
+.car b{font-weight:600}.tag{font-size:12px;padding:1px 7px;border-radius:10px;background:#e8f6ec;color:#1a7a3a;margin-left:6px}
+.tag.re{background:#fff0d6;color:#9a5b00}.tag.fin{background:#eceff4;color:#55607a}
+.route{color:var(--mute);font-size:12.5px;word-break:break-word}.why{font-size:13px;color:#9a5b00}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--mute);margin-top:10px}
+.legend i{display:inline-block;vertical-align:middle;margin-right:5px}
+.how{margin-top:12px;font-size:13.5px;color:#39425a}.how ol{margin:6px 0 0 18px;padding:0}
+</style></head><body>
+<header><h1>Smart Traffic Management - how cars change their route</h1>
+<p>Each junction is a Max-Pressure signal agent. Each car is an A* agent. One accident closes a road; watch who re-routes and why.</p></header>
+<main>
+<section class="card">
+  <canvas id="c" width="640" height="640"></canvas>
+  <div class="ctl"><button id="play">Pause</button><button id="rst">Restart</button>
+    <input id="seek" type="range" min="0" value="0"><span id="clock">t = 0 s</span></div>
+  <div class="legend">
+    <span><i style="width:26px;border-top:3px dashed #444"></i>original route</span>
+    <span><i style="width:26px;border-top:5px solid #2563eb"></i>route the selected car follows now</span>
+    <span><i style="width:12px;height:12px;background:#222"></i>accident - road closed</span>
+  </div>
+</section>
+<section>
+  <div id="banner" class="card">Cars are driving their original (shortest) routes.</div>
+  <div class="card"><h2>The 6 tracked cars <span style="font-weight:400;color:#6a7385">- click one to see its route on the map</span></h2><div id="list"></div></div>
+  <div class="card how"><h2>What is happening</h2><ol>
+    <li>Every car runs <b>A*</b> at the start and drives the cheapest route (dashed line).</li>
+    <li>At t = <span id="ti"></span> s an accident closes one road. The traffic-centre agent <b>broadcasts</b> an INCIDENT_ALERT to every car.</li>
+    <li>Each car checks: <i>is the closed road on my route?</i> If not, it keeps going. If yes, it runs <b>A* again</b> with the road removed and switches to the new route (solid line).</li>
+    <li>Junction agents choose which road gets green with <b>Max-Pressure</b> (more waiting cars = more pressure); cars stop behind a red light.</li>
+  </ol></div>
+</section>
+</main>
+<script>
+const D=__DATA__;
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+const xs=Object.values(D.nodes).map(p=>p[0]),ys=Object.values(D.nodes).map(p=>p[1]);
+const x0=Math.min(...xs)-40,x1=Math.max(...xs)+40,y0=Math.min(...ys)-40,y1=Math.max(...ys)+40;
+const S=Math.min(640/(x1-x0),640/(y1-y0));
+const X=x=>(x-x0)*S,Y=y=>640-(y-y0)*S,P=n=>[X(D.nodes[n][0]),Y(D.nodes[n][1])];
+const short=n=>n.replace('INT_','J');
+let sel=0,f=0,playing=true,last=0;
+const seek=document.getElementById('seek');seek.max=D.frames.length-1;
+document.getElementById('ti').textContent=D.incident.t;
+const reroutes={};D.events.forEach(e=>reroutes[e.car]=e);
+
+function line(path,col,w,dash,off){g.save();g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash);g.lineCap='round';g.lineJoin='round';
+  g.beginPath();path.forEach((n,i)=>{let[p,q]=P(n);i?g.lineTo(p+off,q+off):g.moveTo(p+off,q+off)});g.stroke();g.restore()}
+function draw(){
+  const fr=D.frames[f];g.clearRect(0,0,640,640);
+  g.lineCap='round';g.strokeStyle='#c9ced8';g.lineWidth=14*S/1.2;
+  D.roads.forEach(([a,b])=>{const[p,q]=P(a),[r,s]=P(b);g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke()});
+  const on=fr.t>=D.incident.t;
+  if(on){const[a,b]=D.incident.road,[p,q]=P(a),[r,s]=P(b);g.strokeStyle='#222';g.lineWidth=14*S/1.2;
+    g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke();
+    g.fillStyle='#d11';g.font='bold 13px system-ui';g.textAlign='left';g.fillText('ACCIDENT',(p+r)/2+10,(q+s)/2)}
+  // routes: only for the selected car -> original dashed grey, current solid in the car's colour
+  const c=D.cars[sel],cur=fr.cars[c.name],re=reroutes[c.name]&&fr.t>=reroutes[c.name].t;
+  line(c.original,'#444',3,[8,7],0);
+  if(re&&cur)line(cur[3],c.colour,5,[],0);
+  else if(cur)line(c.original,c.colour,5,[],0);
+  g.fillStyle='#444';g.font='bold 12px system-ui';g.textAlign='left';
+  const [sx,sy]=P(c.from),[ex,ey]=P(c.to);g.fillText('START',sx+6,sy-6);g.fillText('END',ex+6,ey-6);
+  // junctions + signals
+  D.signals.forEach(id=>{const[p,q]=P(id),ph=fr.light[id];const ns=ph==='NS_GREEN',ew=ph==='EW_GREEN';
+    g.fillStyle='#fff';g.strokeStyle='#8a93a6';g.lineWidth=1;g.fillRect(p-11,q-11,22,22);g.strokeRect(p-11,q-11,22,22);
+    const col=(go)=>go?'#2db84d':(ph==='NS_GREEN'||ph==='EW_GREEN')?'#e03434':'#f0b400';
+    g.fillStyle=col(ns);g.fillRect(p-3,q-11,6,22);g.fillStyle=col(ew);g.fillRect(p-11,q-3,22,6);
+    g.fillStyle='#39425a';g.font='11px system-ui';g.textAlign='center';g.fillText(short(id),p,q-15)});
+  g.fillStyle='#8a93a6';g.font='11px system-ui';g.textAlign='center';
+  Object.keys(D.nodes).filter(n=>!n.startsWith('INT')).forEach(n=>{const[p,q]=P(n);g.fillText(n,p,q+4)});
+  // background cars
+  g.fillStyle='#9aa3b5';fr.bg.forEach(([x,y])=>{g.beginPath();g.arc(X(x),Y(y),3,0,7);g.fill()});
+  // tracked cars
+  D.cars.forEach(c=>{const v=fr.cars[c.name];if(!v)return;const px=X(v[0]),py=Y(v[1]);
+    g.fillStyle=c.colour;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.arc(px,py,7,0,7);g.fill();g.stroke();
+    g.fillStyle='#fff';g.font='bold 9px system-ui';g.textAlign='center';g.fillText(c.name.slice(4),px,py+3)});
+  ui(fr)}
+function status(c,fr){const v=fr.cars[c.name],e=reroutes[c.name];
+  const arr=D.arrived[c.name];const done=!v&&arr&&fr.t>=arr;
+  let tag=done?'<span class="tag fin">arrived</span>':!v?'<span class="tag fin">not started</span>':
+    (e&&fr.t>=e.t)?'<span class="tag re">RE-ROUTED</span>':'<span class="tag">original route</span>';
+  let h=`<b>${c.name}</b> ${c.from} &rarr; ${c.to}${tag}`;
+  if(v&&v[2])h+=' <span class="route">(waiting at a light)</span>';
+  h+=`<div class="route">original: ${c.original.map(short).join(' - ')}</div>`;
+  if(e&&fr.t>=e.t)h+=`<div class="route">now: <b>${e.new.map(short).join(' - ')}</b></div><div class="why">t=${e.t}s: ${e.why}; A* found a new route.</div>`;
+  else if(fr.t>=D.incident.t)h+=`<div class="route">closed road is not on this route - no change needed.</div>`;
+  return h}
+function ui(fr){
+  document.getElementById('clock').textContent='t = '+fr.t+' s';seek.value=f;
+  const re=D.events.filter(e=>fr.t>=e.t),b=document.getElementById('banner');
+  if(fr.t<D.incident.t){b.className='card';b.textContent='Cars are driving their original (shortest) routes.'}
+  else{b.className='card alert';b.innerHTML='<b>Accident on road '+short(D.incident.road[0])+' - '+short(D.incident.road[1])+'.</b> '+re.length+' of '+D.cars.length+' tracked cars had it on their route and re-planned with A*; the others carry on unchanged.'}
+  document.getElementById('list').innerHTML=D.cars.map(c=>`<div class="car${c.name===D.cars[sel].name?' sel':''}" onclick="sel=D.cars.findIndex(k=>k.name==='${c.name}');draw()"><div class="dot" style="background:${c.colour}"></div><div>${status(c,fr)}</div></div>`).join('')}
+document.getElementById('play').onclick=e=>{playing=!playing;e.target.textContent=playing?'Pause':'Play'};
+document.getElementById('rst').onclick=()=>{f=0;draw()};
+seek.oninput=()=>{f=+seek.value;draw()};
+function tick(ts){if(playing&&ts-last>180){last=ts;if(f<D.frames.length-1)f++;else playing=false,document.getElementById('play').textContent='Play';draw()}requestAnimationFrame(tick)}
+draw();requestAnimationFrame(tick);
+</script></body></html>

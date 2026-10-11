@@ -1,0 +1,397 @@
+{
+ "total": 43,
+ "passed": 43,
+ "failed": 0,
+ "errors": 0,
+ "seconds": 18.0,
+ "python": "3.11.15",
+ "rows": [
+  {
+   "id": "DM-01",
+   "suite": "test_demo",
+   "description": "every car whose original route used the closed road gets a new route that avoids it",
+   "status": "PASS",
+   "actual": "2 cars had the closed road on their route -> all re-planned without it",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "DM-02",
+   "suite": "test_demo",
+   "description": "cars that do not use the closed road are never re-routed",
+   "status": "PASS",
+   "actual": "4 unaffected cars kept their original route",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "DM-03",
+   "suite": "test_demo",
+   "description": "all tracked cars reach their destination despite the accident",
+   "status": "PASS",
+   "actual": "latest arrival t = 113 s of 130 s recorded",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "IT-01",
+   "suite": "test_integration",
+   "description": "ambulance PREEMPT_OVERRIDE -> intersection AGREE -> ambulance CANCEL after crossing, per intersection",
+   "status": "PASS",
+   "actual": "INT_10 and INT_00 each: PREEMPT_OVERRIDE, AGREE, CANCEL; ambulance wait 0 s",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "IT-02",
+   "suite": "test_integration",
+   "description": "SAFETY - no signal ever goes directly from one green to the other (always via YELLOW), even with preemption and bus priority",
+   "status": "PASS",
+   "actual": "202 phase changes checked: 0 green->green, 0 yellows shorter than 3 s",
+   "seconds": 0.09,
+   "detail": ""
+  },
+  {
+   "id": "IT-03",
+   "suite": "test_integration",
+   "description": "bus priority is ACCEPTED on a light cross street and REJECTED on a heavy one",
+   "status": "PASS",
+   "actual": "cross queue 0 -> ACCEPT_PROPOSAL; cross queue 10 -> REJECT_PROPOSAL",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "IT-04",
+   "suite": "test_integration",
+   "description": "an ambulance preemption outranks bus priority (bus proposal rejected)",
+   "status": "PASS",
+   "actual": "bus got REJECT_PROPOSAL: 'emergency preemption active'",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "IT-05",
+   "suite": "test_integration",
+   "description": "TMC INCIDENT_ALERT makes every affected vehicle drop the closed road from its plan",
+   "status": "PASS",
+   "actual": "6 / 6 vehicles re-planned away from INT_00->INT_01 and arrived",
+   "seconds": 0.01,
+   "detail": ""
+  },
+  {
+   "id": "IT-06",
+   "suite": "test_integration",
+   "description": "coordinator INFORM PARAMETER_UPDATE changes every intersection's controller",
+   "status": "PASS",
+   "actual": "all 4 intersections now min_green 8 s, max_green 40 s",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "IT-07",
+   "suite": "test_integration",
+   "description": "releasing a platoon sends INFORM PLATOON_INCOMING to the downstream neighbour, which stores it",
+   "status": "PASS",
+   "actual": "1 PLATOON_INCOMING messages exchanged on a 1x3 corridor",
+   "seconds": 0.01,
+   "detail": ""
+  },
+  {
+   "id": "IT-08",
+   "suite": "test_integration",
+   "description": "every vehicle is on at most one road, no road exceeds capacity, and all vehicles arrive",
+   "status": "PASS",
+   "actual": "180 vehicles, all arrived at t=397 s; peak road occupancy 35%",
+   "seconds": 0.16,
+   "detail": ""
+  },
+  {
+   "id": "IT-09",
+   "suite": "test_integration",
+   "description": "the same seed gives exactly the same result (reproducible experiments)",
+   "status": "PASS",
+   "actual": "two runs identical: avg wait 8.34 s, 21 messages",
+   "seconds": 0.09,
+   "detail": ""
+  },
+  {
+   "id": "ST-01",
+   "suite": "test_scenarios",
+   "description": "Max-Pressure reduces average wait by at least 25% vs Fixed-Time, all vehicles arrive",
+   "status": "PASS",
+   "actual": "15.36 s -> 8.2 s (46.6% less)",
+   "seconds": 0.89,
+   "detail": ""
+  },
+  {
+   "id": "ST-03",
+   "suite": "test_scenarios",
+   "description": "with anti-starvation no minority vehicle is left unserved; without it some are",
+   "status": "PASS",
+   "actual": "starved E-W cars: with = 0, without = 10",
+   "seconds": 0.9,
+   "detail": ""
+  },
+  {
+   "id": "ST-04",
+   "suite": "test_scenarios",
+   "description": "preemption gives the ambulance zero signal delay, >= 20% faster, < 1 s cost to others",
+   "status": "PASS",
+   "actual": "54.0 s -> 38.0 s (29.6% faster), others -0.05 s",
+   "seconds": 0.32,
+   "detail": ""
+  },
+  {
+   "id": "ST-05",
+   "suite": "test_scenarios",
+   "description": "closure - static routing strands vehicles, re-routing delivers 100%; slowdown - broadcast >= 20% faster than local",
+   "status": "PASS",
+   "actual": "closure: static 0%, broadcast 100%; slowdown: local 144.61 s vs broadcast 95.47 s",
+   "seconds": 0.75,
+   "detail": ""
+  },
+  {
+   "id": "ST-06",
+   "suite": "test_scenarios",
+   "description": "TSP makes buses faster, rejects some proposals under heavy cross traffic, and saves passenger time overall",
+   "status": "PASS",
+   "actual": "heavy cross: 21 accepted / 11 rejected, net 525 passenger-s saved",
+   "seconds": 0.6,
+   "detail": ""
+  },
+  {
+   "id": "ST-07",
+   "suite": "test_scenarios",
+   "description": "A* is 100% optimal and expands fewer nodes than UCS; Greedy is not always optimal",
+   "status": "PASS",
+   "actual": "A* 14.5 vs UCS 35.5 nodes; greedy optimal 54.0%",
+   "seconds": 0.15,
+   "detail": ""
+  },
+  {
+   "id": "ST-08",
+   "suite": "test_scenarios",
+   "description": "hill-climbing-tuned parameters beat the defaults on unseen validation traffic",
+   "status": "PASS",
+   "actual": "validation wait 8.65 s -> 6.96 s; params pushed to agents",
+   "seconds": 13.12,
+   "detail": ""
+  },
+  {
+   "id": "ST-09",
+   "suite": "test_scenarios",
+   "description": "2x2-4x4 grids all clear, Max-Pressure beats Fixed-Time at every size",
+   "status": "PASS",
+   "actual": "2x2: 45.4% less wait, 0.12 ms/tick; 3x3: 44.5% less wait, 0.24 ms/tick; 4x4: 42.4% less wait, 0.38 ms/tick",
+   "seconds": 0.69,
+   "detail": ""
+  },
+  {
+   "id": "UT-13",
+   "suite": "test_unit",
+   "description": "after min-green, switch (via YELLOW) when the red approach has higher pressure",
+   "status": "PASS",
+   "actual": "EW green, NS pressure 20+10 vs EW 2 -> YELLOW",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-14",
+   "suite": "test_unit",
+   "description": "never switch before the minimum green time",
+   "status": "PASS",
+   "actual": "at 2 s (< 5 s min green) phase held",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-15",
+   "suite": "test_unit",
+   "description": "forced switch at max-green if the other approach has waiting cars",
+   "status": "PASS",
+   "actual": "NS green 30 s with 1 EW car waiting -> YELLOW",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-16",
+   "suite": "test_unit",
+   "description": "no switch towards an approach with no waiting vehicles (no wasted green)",
+   "status": "PASS",
+   "actual": "EW empty -> NS kept green even past max-green",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-17",
+   "suite": "test_unit",
+   "description": "yellow lasts yellow_time and is followed by the OPPOSITE green",
+   "status": "PASS",
+   "actual": "yellow held at 2 s, NS->YELLOW->EW at 3 s",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-18",
+   "suite": "test_unit",
+   "description": "P = sum max(0, Q_in - Q_out) over movements (worked example)",
+   "status": "PASS",
+   "actual": "movements (8,2),(3,5) -> 6; EW with 10 s red -> 2 + 5 = 7",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-19",
+   "suite": "test_unit",
+   "description": "point-to-point delivery and reply threading (same conversation id)",
+   "status": "PASS",
+   "actual": "REQUEST/AGREE share conversation C010323",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-20",
+   "suite": "test_unit",
+   "description": "broadcast reaches everyone except the sender; unknown receiver is reported",
+   "status": "PASS",
+   "actual": "B and C received, A (sender) did not; unknown receiver -> False",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-21",
+   "suite": "test_unit",
+   "description": "hill climbing reaches the global minimum of a convex test function",
+   "status": "PASS",
+   "actual": "found (7,2) from (0,9) in 15 iterations",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-09",
+   "suite": "test_unit",
+   "description": "BPR travel time grows with load, equals free-flow when empty, infinite when closed",
+   "status": "PASS",
+   "actual": "empty 20.0s, full 23.0s, closed inf",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-10",
+   "suite": "test_unit",
+   "description": "a road refuses vehicles when full or closed",
+   "status": "PASS",
+   "actual": "3rd vehicle refused at capacity 2; refused when closed",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-11",
+   "suite": "test_unit",
+   "description": "stop line discharges at most one vehicle every 2 s (1800 veh/h/lane)",
+   "status": "PASS",
+   "actual": "discharge blocked at +1 s, allowed at +2 s",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-12",
+   "suite": "test_unit",
+   "description": "an R x C grid has R*C intersection agents and the right number of roads",
+   "status": "PASS",
+   "actual": "2x2, 3x4, 6x6 grids: agent and road counts correct",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-01",
+   "suite": "test_unit",
+   "description": "h(n) <= true optimal cost h*(n) for every node and goal tested",
+   "status": "PASS",
+   "actual": "max h/h* ratio = 1.000 (<= 1 required)",
+   "seconds": 0.1,
+   "detail": ""
+  },
+  {
+   "id": "UT-02",
+   "suite": "test_unit",
+   "description": "h(u) <= c(u,v) + h(v) for every road and goal (consistency / monotonicity)",
+   "status": "PASS",
+   "actual": "501 (edge, goal) pairs satisfy the triangle inequality",
+   "seconds": 0.01,
+   "detail": ""
+  },
+  {
+   "id": "UT-03",
+   "suite": "test_unit",
+   "description": "A* returns the same optimal cost as UCS/Dijkstra on 60 random trips",
+   "status": "PASS",
+   "actual": "60 / 60 trips: cost(A*) == cost(UCS)",
+   "seconds": 0.03,
+   "detail": ""
+  },
+  {
+   "id": "UT-04",
+   "suite": "test_unit",
+   "description": "A* never expands more nodes than UCS (same tie-breaking)",
+   "status": "PASS",
+   "actual": "total expansions A* = 924, UCS = 2377",
+   "seconds": 0.04,
+   "detail": ""
+  },
+  {
+   "id": "UT-05",
+   "suite": "test_unit",
+   "description": "when A->B is closed, A* routes A->D->C",
+   "status": "PASS",
+   "actual": "path before: A-B-C, after closure: A-D-C",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-06",
+   "suite": "test_unit",
+   "description": "BFS returns a fewest-roads path",
+   "status": "PASS",
+   "actual": "W0->E0 on 6x6 grid: 7 roads (minimum = 7)",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-07",
+   "suite": "test_unit",
+   "description": "search reports failure (empty path, infinite cost) when the goal is cut off",
+   "status": "PASS",
+   "actual": "all 4 algorithms return [] for an unreachable goal",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-08",
+   "suite": "test_unit",
+   "description": "Greedy best-first returns a valid (connected) path, possibly sub-optimal",
+   "status": "PASS",
+   "actual": "20 / 20 greedy paths use only existing roads",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-22",
+   "suite": "test_unit",
+   "description": "a vehicle is not on the road before its departure time",
+   "status": "PASS",
+   "actual": "not departed at t=19, departed at t=21",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "UT-23",
+   "suite": "test_unit",
+   "description": "learning ROAD_BLOCKED makes the road cost infinite for that vehicle; ROAD_CLEARED restores it",
+   "status": "PASS",
+   "actual": "cost inf after ROAD_BLOCKED, finite after ROAD_CLEARED",
+   "seconds": 0.0,
+   "detail": ""
+  }
+ ]
+}

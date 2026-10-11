@@ -1,0 +1,21 @@
+FIPA-ACL messages exchanged in the demo run (green-wave INFORMs omitted)
+
+t=   30s      TMC_COORD --BROADCAST--> BROADCAST     {'type': 'INCIDENT_ALERT', 'status': 'ROAD_SLOWED', 'segment': ['INT_10', 'INT_11'], 'speed_mps': 2.0, 'recommended_action': 'REPLAN_ROUTE_ASTAR'}
+t=   62s   AMBULANCE_01 --PREEMPT_OVERRIDE--> INT_10        {'emergency_vehicle_id': 'AMBULANCE_01', 'corridor_direction': 'NS', 'eta_s': 12.0, 'urgency': 'CRITICAL'}
+t=   63s         INT_10 --AGREE--> AMBULANCE_01  {'status': 'PREEMPTION_GRANTED', 'intersection': 'INT_10', 'axis': 'NS'}
+t=   65s         BUS_01 --PROPOSE--> INT_10        {'bus_id': 'BUS_01', 'axis': 'EW', 'eta_s': 11.2, 'passengers': 40}
+t=   66s         INT_10 --REJECT_PROPOSAL--> BUS_01        {'intersection': 'INT_10', 'axis': 'EW', 'reason': 'emergency preemption active'}
+t=   73s   AMBULANCE_01 --PREEMPT_OVERRIDE--> INT_00        {'emergency_vehicle_id': 'AMBULANCE_01', 'corridor_direction': 'NS', 'eta_s': 14.9, 'urgency': 'CRITICAL'}
+t=   74s         INT_00 --AGREE--> AMBULANCE_01  {'status': 'PREEMPTION_GRANTED', 'intersection': 'INT_00', 'axis': 'NS'}
+t=   75s   AMBULANCE_01 --CANCEL--> INT_10        {'emergency_vehicle_id': 'AMBULANCE_01', 'status': 'CLEARED_INTERSECTION'}
+t=   79s         BUS_01 --CANCEL--> INT_10        {'bus_id': 'BUS_01', 'status': 'CLEARED'}
+t=   87s   AMBULANCE_01 --CANCEL--> INT_00        {'emergency_vehicle_id': 'AMBULANCE_01', 'status': 'CLEARED_INTERSECTION'}
+t=   91s         BUS_01 --PROPOSE--> INT_00        {'bus_id': 'BUS_01', 'axis': 'NS', 'eta_s': 11.1, 'passengers': 40}
+t=   92s         INT_00 --ACCEPT_PROPOSAL--> BUS_01        {'intersection': 'INT_00', 'axis': 'NS', 'reason': 'cross-street queue 1 <= 6'}
+t=  102s         BUS_01 --CANCEL--> INT_00        {'bus_id': 'BUS_01', 'status': 'CLEARED'}
+t=  109s         BUS_01 --PROPOSE--> INT_01        {'bus_id': 'BUS_01', 'axis': 'EW', 'eta_s': 11.1, 'passengers': 40}
+t=  110s         INT_01 --ACCEPT_PROPOSAL--> BUS_01        {'intersection': 'INT_01', 'axis': 'EW', 'reason': 'cross-street queue 1 <= 6'}
+t=  120s         BUS_01 --CANCEL--> INT_01        {'bus_id': 'BUS_01', 'status': 'CLEARED'}
+t=  127s         BUS_01 --PROPOSE--> INT_11        {'bus_id': 'BUS_01', 'axis': 'NS', 'eta_s': 11.1, 'passengers': 40}
+t=  128s         INT_11 --ACCEPT_PROPOSAL--> BUS_01        {'intersection': 'INT_11', 'axis': 'NS', 'reason': 'cross-street queue 0 <= 6'}
+t=  138s         BUS_01 --CANCEL--> INT_11        {'bus_id': 'BUS_01', 'status': 'CLEARED'}
