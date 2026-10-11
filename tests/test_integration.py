@@ -43,14 +43,12 @@ class TestAgentInteraction(unittest.TestCase):
         record("IT-01", "INT_10 and INT_00 each: PREEMPT_OVERRIDE, AGREE, CANCEL; ambulance wait 0 s")
 
     def test_IT02_yellow_safety_invariant(self):
-        """IT-02: SAFETY - no signal ever goes directly from one green to the other (always via YELLOW), even with preemption and bus priority"""
+        """IT-02: SAFETY - no signal ever goes directly from one green to the other (always via YELLOW), even with ambulance preemption"""
         sim = make_sim()
         sim.spawn_poisson_demand(OD_2x2, 0.45, 250, random.Random(7))
         for t in (30, 90, 150):
             sim.spawn_emergency_vehicle("S0", "N0", departure_time=t)
             sim.spawn_emergency_vehicle("W1", "E1", departure_time=t + 10)
-        sim.spawn_bus("W0", "E0", departure_time=40)
-        sim.spawn_bus("N1", "S1", departure_time=60)
         trans = watch_phases(sim, 400)
         bad = [t for t in trans if axis_of(t[2]) and axis_of(t[3])]
         self.assertEqual(bad, [])
@@ -64,38 +62,6 @@ class TestAgentInteraction(unittest.TestCase):
                     short_yellow.append((k, t))
         self.assertEqual(short_yellow, [])
         record("IT-02", f"{len(trans)} phase changes checked: 0 green->green, 0 yellows shorter than 3 s")
-
-    def test_IT03_tsp_accept_and_reject(self):
-        """IT-03: bus priority is ACCEPTED on a light cross street and REJECTED on a heavy one"""
-        sim = make_sim()
-        agent = sim.intersections["INT_00"]
-        sim.broker.register_agent("BUS_X")
-        env = sim.env_state()
-        for light in (True, False):
-            seg = sim.network.segment_by_id("N0->INT_00")
-            seg.vehicles = [] if light else [f"d{i}" for i in range(10)]
-            sim.broker.send(ACLMessage("BUS_X", "INT_00", Performative.PROPOSE, {"axis": "EW"},
-                                       ontology="transit-signal-priority"))
-            agent.step(env)
-        replies = [m.performative for m in sim.broker.receive("BUS_X")]
-        self.assertEqual(replies, [Performative.ACCEPT_PROPOSAL, Performative.REJECT_PROPOSAL])
-        record("IT-03", "cross queue 0 -> ACCEPT_PROPOSAL; cross queue 10 -> REJECT_PROPOSAL")
-
-    def test_IT04_tsp_rejected_during_emergency(self):
-        """IT-04: an ambulance preemption outranks bus priority (bus proposal rejected)"""
-        sim = make_sim()
-        agent = sim.intersections["INT_00"]
-        for a in ("AMB_X", "BUS_X"):
-            sim.broker.register_agent(a)
-        sim.broker.send(ACLMessage("AMB_X", "INT_00", Performative.PREEMPT_OVERRIDE, {"corridor_direction": "NS"},
-                                   ontology="emergency-preemption"))
-        sim.broker.send(ACLMessage("BUS_X", "INT_00", Performative.PROPOSE, {"axis": "EW"},
-                                   ontology="transit-signal-priority"))
-        agent.step(sim.env_state())
-        rep = sim.broker.receive("BUS_X")[0]
-        self.assertEqual(rep.performative, Performative.REJECT_PROPOSAL)
-        self.assertIn("emergency", rep.content["reason"])
-        record("IT-04", f"bus got REJECT_PROPOSAL: '{rep.content['reason']}'")
 
     def test_IT05_incident_broadcast_reroute(self):
         """IT-05: TMC INCIDENT_ALERT makes every affected vehicle drop the closed road from its plan"""

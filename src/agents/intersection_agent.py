@@ -5,7 +5,6 @@ Owner: Member 2 (Intersection Agent & Signal Control)
 
 Decision priority inside reason():
     1. Emergency preemption  (absolute; safety yellow is never skipped)
-    2. Transit Signal Priority for buses  (negotiated; only granted if cross-street cost is low)
     3. Normal control: Max-Pressure (adaptive) or Fixed-Time (baseline)
 Peer coordination: when a green releases a platoon, the agent INFORMs the downstream neighbour,
 which adds the expected arrivals to that axis' pressure (green-wave hand-off).
@@ -25,7 +24,7 @@ class IntersectionAgent(BaseAgent):
                  ns_incoming_roads: List[str], ns_outgoing_roads: List[str],
                  ew_incoming_roads: List[str], ew_outgoing_roads: List[str],
                  mode: str = "MAX_PRESSURE", controller_params: Optional[Dict] = None,
-                 green_wave: bool = True, tsp_max_cross_queue: int = 6):
+                 green_wave: bool = True):
         super().__init__(agent_id, AgentType.INTERSECTION, broker)
         self.controlled_node = controlled_node
         self.ns_incoming_roads = ns_incoming_roads
@@ -34,7 +33,6 @@ class IntersectionAgent(BaseAgent):
         self.ew_outgoing_roads = ew_outgoing_roads
         self.mode = mode
         self.green_wave = green_wave
-        self.tsp_max_cross_queue = tsp_max_cross_queue
 
         params = dict(DEFAULT_PARAMS)
         params.update(controller_params or {})
@@ -50,10 +48,7 @@ class IntersectionAgent(BaseAgent):
 
         # priority requests
         self.emergency_requests: Dict[str, Tuple[str, float]] = {}   # ev_id -> (axis, expiry time)
-        self.tsp_grants: Dict[str, Tuple[str, float]] = {}           # bus_id -> (axis, expiry time)
         self.emergency_timeout = 40.0
-        self.tsp_timeout = 25.0
-        self.tsp_max_extension = 15.0
 
         # green-wave: anticipated platoon arrivals per axis -> list of (vehicles, expiry)
         self.neighbors: Dict[str, str] = {}      # neighbour id -> axis
@@ -69,8 +64,6 @@ class IntersectionAgent(BaseAgent):
         self.last_decision: Optional[Decision] = None
         self.phase_switches = 0
         self.longest_red = {"NS": 0.0, "EW": 0.0}
-        self.tsp_accepted = 0
-        self.tsp_rejected = 0
         self.preemptions_served = 0
         self.decision_log: List[Tuple[float, str, float, float, str]] = []
         self.log_decisions = False
@@ -132,11 +125,8 @@ class IntersectionAgent(BaseAgent):
                                        "axis": c.get("corridor_direction")},
                                       ontology="emergency-preemption", in_reply_to=msg.conversation_id,
                                       conversation_id=msg.conversation_id)
-            elif msg.performative == Performative.PROPOSE and msg.ontology == "transit-signal-priority":
-                self._evaluate_tsp_proposal(msg)
             elif msg.performative == Performative.CANCEL:
                 self.emergency_requests.pop(msg.sender_id, None)
-                self.tsp_grants.pop(msg.sender_id, None)
             elif msg.performative == Performative.INFORM and msg.ontology == "green-wave" and self.green_wave:
                 axis = c.get("axis")
                 if axis in self.anticipated:
@@ -147,29 +137,8 @@ class IntersectionAgent(BaseAgent):
 
         # expire stale requests / predictions
         self.emergency_requests = {k: v for k, v in self.emergency_requests.items() if v[1] > now}
-        self.tsp_grants = {k: v for k, v in self.tsp_grants.items() if v[1] > now}
         for axis in self.anticipated:
             self.anticipated[axis] = [p for p in self.anticipated[axis] if p[1] > now]
-
-    def _evaluate_tsp_proposal(self, msg):
-        """Negotiation: accept bus priority only when the cross street is lightly loaded."""
-        axis = msg.content.get("axis", "NS")
-        cross_queue = self.ew_in_queue if axis == "NS" else self.ns_in_queue
-        if self.emergency_requests:
-            ok, why = False, "emergency preemption active"
-        elif cross_queue > self.tsp_max_cross_queue:
-            ok, why = False, f"cross-street queue {cross_queue} > {self.tsp_max_cross_queue}"
-        else:
-            ok, why = True, f"cross-street queue {cross_queue} <= {self.tsp_max_cross_queue}"
-        if ok:
-            self.tsp_grants[msg.sender_id] = (axis, self.sim_time + self.tsp_timeout)
-            self.tsp_accepted += 1
-        else:
-            self.tsp_rejected += 1
-        self.send_message(msg.sender_id, Performative.ACCEPT_PROPOSAL if ok else Performative.REJECT_PROPOSAL,
-                          {"intersection": self.agent_id, "axis": axis, "reason": why},
-                          ontology="transit-signal-priority", in_reply_to=msg.conversation_id,
-                          conversation_id=msg.conversation_id)
 
     # ---- REASON -------------------------------------------------------
     def _tick_timers(self):
@@ -211,16 +180,6 @@ class IntersectionAgent(BaseAgent):
             nxt = self._serve_axis(axis, can_cut_min_green=True)
             self.last_decision = Decision(nxt, ns_s, ew_s, f"EMERGENCY preemption for {axis}")
             return nxt
-
-        # 2. transit signal priority (bounded green extension / early green)
-        if self.tsp_grants:
-            axis = next(iter(self.tsp_grants.values()))[0]
-            if not (axis_of(self.current_phase) == axis and
-                    self.current_phase_duration >= self.controller.max_green_time + self.tsp_max_extension):
-                nxt = self._serve_axis(axis, can_cut_min_green=False)
-                if nxt is not None:
-                    self.last_decision = Decision(nxt, ns_s, ew_s, f"TSP priority for bus on {axis}")
-                    return nxt
 
         # 3a. fixed-time baseline
         if self.mode == "FIXED_TIME":

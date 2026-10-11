@@ -10,13 +10,9 @@ Interaction protocols used in this project
        Ambulance --PREEMPT_OVERRIDE--> Intersection
        Intersection --AGREE--> Ambulance
        Ambulance --CANCEL--> Intersection          (after it has crossed)
-2. Transit Signal Priority negotiation (fipa-propose)
-       Bus --PROPOSE--> Intersection
-       Intersection --ACCEPT_PROPOSAL | REJECT_PROPOSAL--> Bus
-       Bus --CANCEL--> Intersection                 (after it has crossed)
-3. Green-wave platoon hand-off (peer-to-peer INFORM)
+2. Green-wave platoon hand-off (peer-to-peer INFORM)
        Intersection --INFORM(PLATOON_INCOMING)--> downstream Intersection
-4. Incident management / advisories (one-to-many BROADCAST)
+3. Incident management / advisories (one-to-many BROADCAST)
        Coordinator --BROADCAST(INCIDENT_ALERT)--> all agents
        Coordinator --INFORM(CONGESTION_WARNING)--> all agents
        Coordinator --INFORM(PARAMETER_UPDATE)--> Intersections  (hill-climbing tuner)

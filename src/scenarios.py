@@ -8,7 +8,7 @@ Every scenario is deterministic for its seeds, runs every vehicle to completion
     S2  Rush-hour surge & anti-starvation ablation                     Member 2
     S3  Emergency green corridor (same controller, preemption on/off)  Member 4
     S4  Accident: static vs local vs broadcast re-routing              Member 3 + 5
-    S5  Bus Transit Signal Priority negotiation                        Member 4
+    S5  Conventional city vs our system (accident + ambulance)         Member 1 + 4
     S6  Hill-climbing policy tuning (train vs validation seeds)        Member 5
     S7  Search algorithm comparison (BFS/UCS/Greedy/A*/W-A*)           Member 3
     S8  Scalability 2x2 .. 8x8 grids                                   Member 1
@@ -197,37 +197,27 @@ def scenario_4_incident(seeds=range(1, 6), n_target=12) -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------------- S5
-def scenario_5_bus_priority(seeds=range(1, 9), n_buses=4, bus_pax=40, car_pax=1.2) -> Dict[str, Any]:
-    cross_od = [("N0", "S0"), ("S0", "N0"), ("N1", "S1"), ("S1", "N1")]
-    out = {}
-    for label, rate in (("light cross-traffic (0.2 veh/s)", 0.2), ("heavy cross-traffic (0.5 veh/s)", 0.5)):
-        for tsp in (False, True):
-            bt, cw, acc, rej, cars_n = [], [], 0, 0, []
-            for s in seeds:
-                sim = make_sim()
-                sim.spawn_poisson_demand(cross_od, rate, 220, random.Random(s))
-                buses = [sim.spawn_bus("W0", "E0", departure_time=20 + 45 * i, tsp_enabled=tsp) for i in range(n_buses)]
-                sim.run_until_clear(3000)
-                bt += [b.total_travel_time for b in buses]
-                car = sim.summary(lambda v: v.agent_type.value == "VEHICLE")
-                cw.append(car["avg_wait_s"])
-                cars_n.append(car["arrived"])
-                acc += sum(len(b.accepted) for b in buses)
-                rej += sum(len(b.rejected) for b in buses)
-            out[f"{label} | TSP {'ON' if tsp else 'OFF'}"] = {
-                "bus_travel_s": _mean(bt), "car_avg_wait_s": _mean(cw), "proposals_accepted": acc,
-                "proposals_rejected": rej, "cars_per_run": _mean(cars_n), "bus_travel_list": bt}
-    # passenger-weighted delay change per run
-    for label in ("light cross-traffic (0.2 veh/s)", "heavy cross-traffic (0.5 veh/s)"):
-        off, on = out[f"{label} | TSP OFF"], out[f"{label} | TSP ON"]
-        bus_gain = (off["bus_travel_s"] - on["bus_travel_s"]) * n_buses * bus_pax
-        car_loss = (on["car_avg_wait_s"] - off["car_avg_wait_s"]) * on["cars_per_run"] * car_pax
-        on["passenger_seconds_saved_by_bus"] = round(bus_gain, 0)
-        on["passenger_seconds_lost_by_cars"] = round(car_loss, 0)
-        on["net_passenger_seconds_saved"] = round(bus_gain - car_loss, 0)
-    for v in out.values():
-        v.pop("bus_travel_list", None)
-    return {"rows": out, "bus_passengers": bus_pax, "car_occupancy": car_pax}
+def scenario_5_conventional_vs_ours(seeds=range(1, 6)) -> Dict[str, Any]:
+    """Same city, same traffic, same accident (+ one ambulance): conventional vs our multi-agent system.
+    Conventional = fixed-time signals, drivers re-route only when the closed road is the next one, no preemption."""
+    from src.demo import _run, DEFAULT_CLOSED
+    runs = {"Conventional": [], "Ours (STMS)": []}
+    for sd in seeds:
+        for label, variant in (("Conventional", "conventional"), ("Ours (STMS)", "ours")):
+            r, _ = _run(variant, DEFAULT_CLOSED, seed=sd)
+            runs[label].append(r["stats"])
+    rows = {}
+    for label, lst in runs.items():
+        rows[label] = {"ambulance_trip_s": _mean([x["ambulance_trip_s"] for x in lst]),
+                       "ambulance_red_wait_s": _mean([x["ambulance_red_wait_s"] for x in lst]),
+                       "avg_wait_s": _mean([x["avg_wait_s"] for x in lst]),
+                       "arrived_pct": _mean([100.0 * x["arrived"] / x["spawned"] for x in lst]),
+                       "ambulance_trip_list": [x["ambulance_trip_s"] for x in lst]}
+    c, o = rows["Conventional"], rows["Ours (STMS)"]
+    pct = lambda a, b: round(100 * (a - b) / a, 1) if a else 0.0
+    return {"rows": rows, "seeds": list(seeds), "accident": "J01-J11 closed at t = 10 s",
+            "ambulance_trip_saved_pct": pct(c["ambulance_trip_s"], o["ambulance_trip_s"]),
+            "avg_wait_saved_pct": pct(c["avg_wait_s"], o["avg_wait_s"])}
 
 
 # ---------------------------------------------------------------- S6
@@ -374,7 +364,7 @@ def run_all(fast: bool = False) -> Dict[str, Any]:
         "S2": scenario_2_rush_hour(seeds=range(1, (k or 5) + 1)),
         "S3": scenario_3_emergency(seeds=range(1, (k or 10) + 1)),
         "S4": scenario_4_incident(seeds=range(1, (k or 5) + 1)),
-        "S5": scenario_5_bus_priority(seeds=range(1, (k or 8) + 1)),
+        "S5": scenario_5_conventional_vs_ours(seeds=range(1, (k or 5) + 1)),
         "S6": scenario_6_hill_climbing(),
         "S7": scenario_7_search_comparison(),
         "S8": scenario_8_scalability(sizes=(2, 3, 4) if fast else (2, 3, 4, 5, 6, 8)),

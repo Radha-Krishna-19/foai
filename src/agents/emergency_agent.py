@@ -1,7 +1,7 @@
 """
 Emergency Vehicle Agent (ambulance / fire engine).
 
-Owner: Member 4 (Priority Vehicles: Emergency + Bus)
+Owner: Member 4 (Ambulance Agent)
 
 Protocol (per intersection on the route):
     when ETA to the intersection <= preempt_horizon  ->  PREEMPT_OVERRIDE (request green on my axis)

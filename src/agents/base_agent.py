@@ -12,7 +12,6 @@ class AgentType(str, Enum):
     INTERSECTION = "INTERSECTION"
     VEHICLE = "VEHICLE"
     EMERGENCY = "EMERGENCY"
-    BUS = "BUS"
     COORDINATOR = "COORDINATOR"
 
 

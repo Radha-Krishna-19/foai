@@ -17,7 +17,6 @@ from src.environment.road_network import RoadNetwork
 from src.agents.intersection_agent import IntersectionAgent
 from src.agents.vehicle_agent import VehicleAgent
 from src.agents.emergency_agent import EmergencyVehicleAgent
-from src.agents.bus_agent import BusAgent
 from src.agents.coordinator_agent import CentralCoordinatorAgent
 from src.algorithms.search_astar import AStarRouter
 from src.protocols.message import MessageBroker
@@ -63,7 +62,6 @@ class TrafficSimulator:
         self.reroute_policy = reroute_policy
         self.vehicles: List[VehicleAgent] = []
         self.emergency_vehicles: List[EmergencyVehicleAgent] = []
-        self.buses: List[BusAgent] = []
         self.sim_time = 0.0
         self.metrics = SimulationMetrics()
         self.record_positions = record_positions
@@ -95,15 +93,6 @@ class TrafficSimulator:
                                    departure_time=dep, preemption_enabled=preemption_enabled)
         self.emergency_vehicles.append(ev)
         return self._register(ev)
-
-    def spawn_bus(self, origin: str, destination: str, departure_time: Optional[float] = None,
-                  tsp_enabled: bool = True) -> BusAgent:
-        bid = f"BUS_{len(self.buses) + 1:02d}"
-        dep = self.sim_time if departure_time is None else departure_time
-        bus = BusAgent(bid, self.broker, self.network, origin, destination, self.router,
-                       departure_time=dep, tsp_enabled=tsp_enabled)
-        self.buses.append(bus)
-        return self._register(bus)
 
     def spawn_poisson_demand(self, od_pairs: List[Tuple[str, str]], rate_per_s: float, duration: float,
                              rng: random.Random, weights: Optional[List[float]] = None) -> int:

@@ -3,7 +3,7 @@
  "passed": 43,
  "failed": 0,
  "errors": 0,
- "seconds": 18.0,
+ "seconds": 17.6,
  "python": "3.11.15",
  "rows": [
   {
@@ -20,7 +20,7 @@
    "suite": "test_demo",
    "description": "cars that do not use the closed road are never re-routed",
    "status": "PASS",
-   "actual": "4 unaffected cars kept their original route",
+   "actual": "5 unaffected cars kept their original route",
    "seconds": 0.0,
    "detail": ""
   },
@@ -29,7 +29,25 @@
    "suite": "test_demo",
    "description": "all tracked cars reach their destination despite the accident",
    "status": "PASS",
-   "actual": "latest arrival t = 113 s of 130 s recorded",
+   "actual": "latest arrival t = 115 s of 190 s recorded",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "DM-04",
+   "suite": "test_demo",
+   "description": "the ambulance gets through faster with preemption and never waits at red",
+   "status": "PASS",
+   "actual": "ambulance 126.0 s (conventional) -> 73.0 s (ours), red wait 47.0 -> 0 s",
+   "seconds": 0.0,
+   "detail": ""
+  },
+  {
+   "id": "DM-05",
+   "suite": "test_demo",
+   "description": "both runs use identical traffic and the same accident, so the comparison is fair",
+   "status": "PASS",
+   "actual": "22 vehicles spawned in each run; accident J01-J11 at t = 10 s",
    "seconds": 0.0,
    "detail": ""
   },
@@ -45,28 +63,10 @@
   {
    "id": "IT-02",
    "suite": "test_integration",
-   "description": "SAFETY - no signal ever goes directly from one green to the other (always via YELLOW), even with preemption and bus priority",
+   "description": "SAFETY - no signal ever goes directly from one green to the other (always via YELLOW), even with ambulance preemption",
    "status": "PASS",
-   "actual": "202 phase changes checked: 0 green->green, 0 yellows shorter than 3 s",
-   "seconds": 0.09,
-   "detail": ""
-  },
-  {
-   "id": "IT-03",
-   "suite": "test_integration",
-   "description": "bus priority is ACCEPTED on a light cross street and REJECTED on a heavy one",
-   "status": "PASS",
-   "actual": "cross queue 0 -> ACCEPT_PROPOSAL; cross queue 10 -> REJECT_PROPOSAL",
-   "seconds": 0.0,
-   "detail": ""
-  },
-  {
-   "id": "IT-04",
-   "suite": "test_integration",
-   "description": "an ambulance preemption outranks bus priority (bus proposal rejected)",
-   "status": "PASS",
-   "actual": "bus got REJECT_PROPOSAL: 'emergency preemption active'",
-   "seconds": 0.0,
+   "actual": "212 phase changes checked: 0 green->green, 0 yellows shorter than 3 s",
+   "seconds": 0.07,
    "detail": ""
   },
   {
@@ -102,7 +102,7 @@
    "description": "every vehicle is on at most one road, no road exceeds capacity, and all vehicles arrive",
    "status": "PASS",
    "actual": "180 vehicles, all arrived at t=397 s; peak road occupancy 35%",
-   "seconds": 0.16,
+   "seconds": 0.14,
    "detail": ""
   },
   {
@@ -111,7 +111,7 @@
    "description": "the same seed gives exactly the same result (reproducible experiments)",
    "status": "PASS",
    "actual": "two runs identical: avg wait 8.34 s, 21 messages",
-   "seconds": 0.09,
+   "seconds": 0.1,
    "detail": ""
   },
   {
@@ -120,7 +120,7 @@
    "description": "Max-Pressure reduces average wait by at least 25% vs Fixed-Time, all vehicles arrive",
    "status": "PASS",
    "actual": "15.36 s -> 8.2 s (46.6% less)",
-   "seconds": 0.89,
+   "seconds": 0.85,
    "detail": ""
   },
   {
@@ -129,7 +129,7 @@
    "description": "with anti-starvation no minority vehicle is left unserved; without it some are",
    "status": "PASS",
    "actual": "starved E-W cars: with = 0, without = 10",
-   "seconds": 0.9,
+   "seconds": 0.96,
    "detail": ""
   },
   {
@@ -138,7 +138,7 @@
    "description": "preemption gives the ambulance zero signal delay, >= 20% faster, < 1 s cost to others",
    "status": "PASS",
    "actual": "54.0 s -> 38.0 s (29.6% faster), others -0.05 s",
-   "seconds": 0.32,
+   "seconds": 0.35,
    "detail": ""
   },
   {
@@ -147,16 +147,16 @@
    "description": "closure - static routing strands vehicles, re-routing delivers 100%; slowdown - broadcast >= 20% faster than local",
    "status": "PASS",
    "actual": "closure: static 0%, broadcast 100%; slowdown: local 144.61 s vs broadcast 95.47 s",
-   "seconds": 0.75,
+   "seconds": 0.64,
    "detail": ""
   },
   {
    "id": "ST-06",
    "suite": "test_scenarios",
-   "description": "TSP makes buses faster, rejects some proposals under heavy cross traffic, and saves passenger time overall",
+   "description": "vs a conventional city, our system moves the ambulance faster and cuts average wait",
    "status": "PASS",
-   "actual": "heavy cross: 21 accepted / 11 rejected, net 525 passenger-s saved",
-   "seconds": 0.6,
+   "actual": "ambulance 126.0 -> 73.0 s, avg wait 21.25 -> 9.59 s",
+   "seconds": 0.21,
    "detail": ""
   },
   {
@@ -165,7 +165,7 @@
    "description": "A* is 100% optimal and expands fewer nodes than UCS; Greedy is not always optimal",
    "status": "PASS",
    "actual": "A* 14.5 vs UCS 35.5 nodes; greedy optimal 54.0%",
-   "seconds": 0.15,
+   "seconds": 0.13,
    "detail": ""
   },
   {
@@ -174,7 +174,7 @@
    "description": "hill-climbing-tuned parameters beat the defaults on unseen validation traffic",
    "status": "PASS",
    "actual": "validation wait 8.65 s -> 6.96 s; params pushed to agents",
-   "seconds": 13.12,
+   "seconds": 13.17,
    "detail": ""
   },
   {
@@ -182,8 +182,8 @@
    "suite": "test_scenarios",
    "description": "2x2-4x4 grids all clear, Max-Pressure beats Fixed-Time at every size",
    "status": "PASS",
-   "actual": "2x2: 45.4% less wait, 0.12 ms/tick; 3x3: 44.5% less wait, 0.24 ms/tick; 4x4: 42.4% less wait, 0.38 ms/tick",
-   "seconds": 0.69,
+   "actual": "2x2: 45.4% less wait, 0.13 ms/tick; 3x3: 44.5% less wait, 0.28 ms/tick; 4x4: 42.4% less wait, 0.4 ms/tick",
+   "seconds": 0.73,
    "detail": ""
   },
   {
@@ -245,7 +245,7 @@
    "suite": "test_unit",
    "description": "point-to-point delivery and reply threading (same conversation id)",
    "status": "PASS",
-   "actual": "REQUEST/AGREE share conversation C010323",
+   "actual": "REQUEST/AGREE share conversation C010069",
    "seconds": 0.0,
    "detail": ""
   },
@@ -309,7 +309,7 @@
    "description": "h(n) <= true optimal cost h*(n) for every node and goal tested",
    "status": "PASS",
    "actual": "max h/h* ratio = 1.000 (<= 1 required)",
-   "seconds": 0.1,
+   "seconds": 0.09,
    "detail": ""
   },
   {
@@ -327,7 +327,7 @@
    "description": "A* returns the same optimal cost as UCS/Dijkstra on 60 random trips",
    "status": "PASS",
    "actual": "60 / 60 trips: cost(A*) == cost(UCS)",
-   "seconds": 0.03,
+   "seconds": 0.04,
    "detail": ""
   },
   {
@@ -336,7 +336,7 @@
    "description": "A* never expands more nodes than UCS (same tie-breaking)",
    "status": "PASS",
    "actual": "total expansions A* = 924, UCS = 2377",
-   "seconds": 0.04,
+   "seconds": 0.03,
    "detail": ""
   },
   {

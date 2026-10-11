@@ -2,9 +2,9 @@
 Smart Traffic Management System (STMS) - demo runner for the Review 2 presentation.
 
     python run_simulation.py --all              every scenario, one after another (~1 min)
-    python run_simulation.py --scenario 3       one scenario: 1, 2, 3, 4, 5, 6, 7, 8
+    python run_simulation.py --scenario 3       one scenario: 1, 2, 3, 4, 6, 7, 8
     python run_simulation.py --astar-trace      step-by-step A* expansion table
-    python run_simulation.py --protocol         live FIPA-ACL message log (ambulance + bus + incident)
+    python run_simulation.py --protocol         live FIPA-ACL message log (ambulance + incident)
 """
 
 import argparse
@@ -35,7 +35,7 @@ def banner():
     console.print(Panel.fit(
         "[bold cyan]SMART TRAFFIC MANAGEMENT SYSTEM[/]  -  multi-agent AI case study\n"
         "[white]Agents:[/] Intersection (Max-Pressure) | Vehicle (A*) | Ambulance (preemption) | "
-        "Bus (negotiated priority) | Coordinator/TMC (hill climbing)\n"
+        "Coordinator/TMC (hill climbing)\n"
         "[dim]Team of 5 - see README.md for who owns which module[/]", border_style="cyan"))
 
 
@@ -95,13 +95,12 @@ def show_s4():
 
 
 def show_s5():
-    console.rule("[bold]S5  Bus Transit Signal Priority - negotiation, not override")
-    r = S.scenario_5_bus_priority()
-    table("4 buses x 40 passengers crossing N-S traffic",
-          ["Case", "Bus travel (s)", "Car wait (s)", "Accepted", "Rejected", "Net passenger-s saved"],
-          [[k, v["bus_travel_s"], v["car_avg_wait_s"], v["proposals_accepted"], v["proposals_rejected"],
-            v.get("net_passenger_seconds_saved", "-")] for k, v in r["rows"].items()], style="yellow")
-    console.print("[yellow]Honest trade-off: cars wait longer, but more people get through sooner.[/]")
+    console.rule("[bold]S5  Conventional city vs our system (accident + ambulance, same traffic)")
+    r = S.scenario_5_conventional_vs_ours()
+    table("5 traffic seeds, accident J01-J11 at t = 10 s",
+          ["System", "Ambulance trip (s)", "Ambulance wait at red (s)", "Avg wait / car (s)", "Cars arrived %"],
+          [[k, v["ambulance_trip_s"], v["ambulance_red_wait_s"], v["avg_wait_s"], v["arrived_pct"]] for k, v in r["rows"].items()])
+    console.print(f"[green]Ambulance {r['ambulance_trip_saved_pct']}% faster, average wait {r['avg_wait_saved_pct']}% lower.[/]")
 
 
 def show_s6():

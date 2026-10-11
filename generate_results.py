@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from src import scenarios as S
 from src.visualization.charts import make_all_charts
+from src.visualization.diagrams import make_diagrams
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 
@@ -30,7 +31,6 @@ def demo_sim():
     sim = S.make_sim()
     sim.spawn_poisson_demand(S.OD_2x2, 0.4, 200, random.Random(3))
     sim.spawn_emergency_vehicle("S0", "N0", departure_time=62)
-    sim.spawn_bus("W1", "E1", departure_time=55)
     sim.schedule(30, lambda s: s.coordinator.report_slowdown("INT_10", "INT_11", 2.0))
     return sim
 
@@ -85,6 +85,7 @@ def main():
     print("Making charts ...")
     for p in make_all_charts(R, os.path.join(OUT, "figures")):
         print("  ", os.path.relpath(p))
+    make_diagrams(os.path.join(OUT, "figures"))
     import run_demo
     run_demo.build()
     print("demo.html rebuilt")

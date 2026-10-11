@@ -49,17 +49,6 @@ class TestScenarios(unittest.TestCase):
         self.assertLess(bc, 0.8 * loc)
         record("ST-05", f"closure: static 0%, broadcast 100%; slowdown: local {loc} s vs broadcast {bc} s")
 
-    def test_ST06_bus_priority(self):
-        """ST-06 (S5): TSP makes buses faster, rejects some proposals under heavy cross traffic, and saves passenger time overall"""
-        r = S.scenario_5_bus_priority(seeds=range(1, 5))["rows"]
-        for lab in ("light cross-traffic (0.2 veh/s)", "heavy cross-traffic (0.5 veh/s)"):
-            self.assertLess(r[f"{lab} | TSP ON"]["bus_travel_s"], r[f"{lab} | TSP OFF"]["bus_travel_s"])
-            self.assertGreater(r[f"{lab} | TSP ON"]["net_passenger_seconds_saved"], 0)
-        heavy = r["heavy cross-traffic (0.5 veh/s) | TSP ON"]
-        self.assertGreater(heavy["proposals_rejected"], 0)
-        record("ST-06", f"heavy cross: {heavy['proposals_accepted']} accepted / {heavy['proposals_rejected']} rejected, "
-                        f"net {heavy['net_passenger_seconds_saved']:.0f} passenger-s saved")
-
     def test_ST07_search(self):
         """ST-07 (S7): A* is 100% optimal and expands fewer nodes than UCS; Greedy is not always optimal"""
         r = S.scenario_7_search_comparison(pairs=100)["rows"]
@@ -84,6 +73,15 @@ class TestScenarios(unittest.TestCase):
             self.assertEqual(v["arrived_pct"], 100.0)
             self.assertLess(v["mp_avg_wait_s"], v["fixed_avg_wait_s"])
         record("ST-09", "; ".join(f"{k}: {v['wait_reduction_pct']}% less wait, {v['ms_per_tick']} ms/tick" for k, v in r.items()))
+
+
+    def test_ST06_conventional_vs_ours(self):
+        """ST-06 (S5): vs a conventional city, our system moves the ambulance faster and cuts average wait"""
+        r = S.scenario_5_conventional_vs_ours(seeds=range(1, 4))
+        c, o = r["rows"]["Conventional"], r["rows"]["Ours (STMS)"]
+        self.assertLess(o["ambulance_trip_s"], c["ambulance_trip_s"])
+        self.assertLess(o["avg_wait_s"], c["avg_wait_s"])
+        record("ST-06", f"ambulance {c['ambulance_trip_s']} -> {o['ambulance_trip_s']} s, avg wait {c['avg_wait_s']} -> {o['avg_wait_s']} s")
 
 
 if __name__ == "__main__":

@@ -176,10 +176,10 @@ class VehicleAgent(BaseAgent):
         return self.network.position_on_segment(self.current_segment, self.distance_on_segment)
 
     def on_crossed(self, node: str, env):
-        """Hook for subclasses (emergency / bus release their priority here)."""
+        """Hook for subclasses (the ambulance releases its priority here)."""
 
     def on_approach(self, env):
-        """Hook for subclasses (emergency / bus request priority here)."""
+        """Hook for subclasses (the ambulance requests priority here)."""
 
     # ---- ACT ----------------------------------------------------------
     def act(self, env: Dict[str, Any]):

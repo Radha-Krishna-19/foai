@@ -212,43 +212,43 @@
  },
  "S5": {
   "rows": {
-   "light cross-traffic (0.2 veh/s) | TSP OFF": {
-    "bus_travel_s": 63.81,
-    "car_avg_wait_s": 2.41,
-    "proposals_accepted": 0,
-    "proposals_rejected": 0,
-    "cars_per_run": 43.38
+   "Conventional": {
+    "ambulance_trip_s": 126.0,
+    "ambulance_red_wait_s": 47.0,
+    "avg_wait_s": 21.25,
+    "arrived_pct": 99.09,
+    "ambulance_trip_list": [
+     126.0,
+     126.0,
+     126.0,
+     126.0,
+     126.0
+    ]
    },
-   "light cross-traffic (0.2 veh/s) | TSP ON": {
-    "bus_travel_s": 58.0,
-    "car_avg_wait_s": 4.76,
-    "proposals_accepted": 64,
-    "proposals_rejected": 0,
-    "cars_per_run": 43.38,
-    "passenger_seconds_saved_by_bus": 930.0,
-    "passenger_seconds_lost_by_cars": 122.0,
-    "net_passenger_seconds_saved": 807.0
-   },
-   "heavy cross-traffic (0.5 veh/s) | TSP OFF": {
-    "bus_travel_s": 63.34,
-    "car_avg_wait_s": 2.87,
-    "proposals_accepted": 0,
-    "proposals_rejected": 0,
-    "cars_per_run": 107.75
-   },
-   "heavy cross-traffic (0.5 veh/s) | TSP ON": {
-    "bus_travel_s": 59.5,
-    "car_avg_wait_s": 4.12,
-    "proposals_accepted": 43,
-    "proposals_rejected": 21,
-    "cars_per_run": 107.75,
-    "passenger_seconds_saved_by_bus": 614.0,
-    "passenger_seconds_lost_by_cars": 162.0,
-    "net_passenger_seconds_saved": 453.0
+   "Ours (STMS)": {
+    "ambulance_trip_s": 73.0,
+    "ambulance_red_wait_s": 0.0,
+    "avg_wait_s": 9.28,
+    "arrived_pct": 100.0,
+    "ambulance_trip_list": [
+     73.0,
+     73.0,
+     73.0,
+     73.0,
+     73.0
+    ]
    }
   },
-  "bus_passengers": 40,
-  "car_occupancy": 1.2
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "accident": "J01-J11 closed at t = 10 s",
+  "ambulance_trip_saved_pct": 42.1,
+  "avg_wait_saved_pct": 56.3
  },
  "S6": {
   "default_params": {
@@ -276,7 +276,7 @@
   "val_tuned_wait_s": 6.96,
   "val_fixed_time_wait_s": 17.02,
   "evaluations": 62,
-  "runtime_s": 12.2,
+  "runtime_s": 12.7,
   "trace": [
    {
     "restart": 0,
@@ -446,7 +446,7 @@
     "optimal_pct": 56.5,
     "avg_extra_cost_pct": 0.67,
     "worst_extra_cost_pct": 3.9,
-    "ms_per_search": 0.07
+    "ms_per_search": 0.085
    },
    "UCS (Dijkstra)": {
     "avg_nodes_expanded": 36.0,
@@ -454,7 +454,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.358
+    "ms_per_search": 0.566
    },
    "Greedy Best-First": {
     "avg_nodes_expanded": 7.7,
@@ -462,7 +462,7 @@
     "optimal_pct": 51.5,
     "avg_extra_cost_pct": 0.7,
     "worst_extra_cost_pct": 4.0,
-    "ms_per_search": 0.146
+    "ms_per_search": 0.154
    },
    "A* (Euclidean h)": {
     "avg_nodes_expanded": 14.1,
@@ -470,7 +470,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.21
+    "ms_per_search": 0.209
    },
    "A* (Manhattan h)": {
     "avg_nodes_expanded": 11.3,
@@ -478,7 +478,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.159
+    "ms_per_search": 0.169
    },
    "Weighted A* (w=2)": {
     "avg_nodes_expanded": 8.0,
@@ -486,7 +486,7 @@
     "optimal_pct": 57.0,
     "avg_extra_cost_pct": 0.51,
     "worst_extra_cost_pct": 4.0,
-    "ms_per_search": 0.174
+    "ms_per_search": 0.128
    }
   }
  },
@@ -500,7 +500,7 @@
     "mp_avg_wait_s": 7.7,
     "wait_reduction_pct": 45.4,
     "messages": 24,
-    "ms_per_tick": 0.19,
+    "ms_per_tick": 0.12,
     "arrived_pct": 100.0
    },
    "3x3": {
@@ -511,7 +511,7 @@
     "mp_avg_wait_s": 11.49,
     "wait_reduction_pct": 44.5,
     "messages": 68,
-    "ms_per_tick": 0.23,
+    "ms_per_tick": 0.21,
     "arrived_pct": 100.0
    },
    "4x4": {
@@ -522,7 +522,7 @@
     "mp_avg_wait_s": 14.81,
     "wait_reduction_pct": 42.4,
     "messages": 133,
-    "ms_per_tick": 0.36,
+    "ms_per_tick": 0.4,
     "arrived_pct": 100.0
    },
    "5x5": {
@@ -533,7 +533,7 @@
     "mp_avg_wait_s": 19.88,
     "wait_reduction_pct": 44.4,
     "messages": 220,
-    "ms_per_tick": 0.52,
+    "ms_per_tick": 0.62,
     "arrived_pct": 100.0
    },
    "6x6": {
@@ -544,7 +544,7 @@
     "mp_avg_wait_s": 24.85,
     "wait_reduction_pct": 44.3,
     "messages": 345,
-    "ms_per_tick": 0.71,
+    "ms_per_tick": 0.79,
     "arrived_pct": 100.0
    },
    "8x8": {
@@ -555,7 +555,7 @@
     "mp_avg_wait_s": 30.3,
     "wait_reduction_pct": 46.6,
     "messages": 593,
-    "ms_per_tick": 1.44,
+    "ms_per_tick": 1.35,
     "arrived_pct": 100.0
    }
   }
@@ -1321,21 +1321,9 @@
   "t=   30s      TMC_COORD --BROADCAST--> BROADCAST     {'type': 'INCIDENT_ALERT', 'status': 'ROAD_SLOWED', 'segment': ['INT_10', 'INT_11'], 'speed_mps': 2.0, 'recommended_action': 'REPLAN_ROUTE_ASTAR'}",
   "t=   62s   AMBULANCE_01 --PREEMPT_OVERRIDE--> INT_10        {'emergency_vehicle_id': 'AMBULANCE_01', 'corridor_direction': 'NS', 'eta_s': 12.0, 'urgency': 'CRITICAL'}",
   "t=   63s         INT_10 --AGREE--> AMBULANCE_01  {'status': 'PREEMPTION_GRANTED', 'intersection': 'INT_10', 'axis': 'NS'}",
-  "t=   65s         BUS_01 --PROPOSE--> INT_10        {'bus_id': 'BUS_01', 'axis': 'EW', 'eta_s': 11.2, 'passengers': 40}",
-  "t=   66s         INT_10 --REJECT_PROPOSAL--> BUS_01        {'intersection': 'INT_10', 'axis': 'EW', 'reason': 'emergency preemption active'}",
   "t=   73s   AMBULANCE_01 --PREEMPT_OVERRIDE--> INT_00        {'emergency_vehicle_id': 'AMBULANCE_01', 'corridor_direction': 'NS', 'eta_s': 14.9, 'urgency': 'CRITICAL'}",
   "t=   74s         INT_00 --AGREE--> AMBULANCE_01  {'status': 'PREEMPTION_GRANTED', 'intersection': 'INT_00', 'axis': 'NS'}",
   "t=   75s   AMBULANCE_01 --CANCEL--> INT_10        {'emergency_vehicle_id': 'AMBULANCE_01', 'status': 'CLEARED_INTERSECTION'}",
-  "t=   79s         BUS_01 --CANCEL--> INT_10        {'bus_id': 'BUS_01', 'status': 'CLEARED'}",
-  "t=   87s   AMBULANCE_01 --CANCEL--> INT_00        {'emergency_vehicle_id': 'AMBULANCE_01', 'status': 'CLEARED_INTERSECTION'}",
-  "t=   91s         BUS_01 --PROPOSE--> INT_00        {'bus_id': 'BUS_01', 'axis': 'NS', 'eta_s': 11.1, 'passengers': 40}",
-  "t=   92s         INT_00 --ACCEPT_PROPOSAL--> BUS_01        {'intersection': 'INT_00', 'axis': 'NS', 'reason': 'cross-street queue 1 <= 6'}",
-  "t=  102s         BUS_01 --CANCEL--> INT_00        {'bus_id': 'BUS_01', 'status': 'CLEARED'}",
-  "t=  109s         BUS_01 --PROPOSE--> INT_01        {'bus_id': 'BUS_01', 'axis': 'EW', 'eta_s': 11.1, 'passengers': 40}",
-  "t=  110s         INT_01 --ACCEPT_PROPOSAL--> BUS_01        {'intersection': 'INT_01', 'axis': 'EW', 'reason': 'cross-street queue 1 <= 6'}",
-  "t=  120s         BUS_01 --CANCEL--> INT_01        {'bus_id': 'BUS_01', 'status': 'CLEARED'}",
-  "t=  127s         BUS_01 --PROPOSE--> INT_11        {'bus_id': 'BUS_01', 'axis': 'NS', 'eta_s': 11.1, 'passengers': 40}",
-  "t=  128s         INT_11 --ACCEPT_PROPOSAL--> BUS_01        {'intersection': 'INT_11', 'axis': 'NS', 'reason': 'cross-street queue 0 <= 6'}",
-  "t=  138s         BUS_01 --CANCEL--> INT_11        {'bus_id': 'BUS_01', 'status': 'CLEARED'}"
+  "t=   87s   AMBULANCE_01 --CANCEL--> INT_00        {'emergency_vehicle_id': 'AMBULANCE_01', 'status': 'CLEARED_INTERSECTION'}"
  ]
 }

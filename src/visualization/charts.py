@@ -122,19 +122,14 @@ def make_all_charts(R: dict, outdir: str) -> list:
     out.append(_save(fig, outdir, "s4_incident.png"))
 
     # S5
-    r = R["S5"]["rows"]
-    lab = ["light cross-traffic (0.2 veh/s)", "heavy cross-traffic (0.5 veh/s)"]
+    r = R["S5"]["rows"]; c, o = r["Conventional"], r["Ours (STMS)"]
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.6, 3.4))
-    _grouped(a1, ["Light cross", "Heavy cross"],
-             {"TSP OFF": [r[f"{l} | TSP OFF"]["bus_travel_s"] for l in lab],
-              "TSP ON": [r[f"{l} | TSP ON"]["bus_travel_s"] for l in lab]}, [ORANGE, BLUE])
-    _style(a1, "Bus travel time (s)")
-    _grouped(a2, ["Light cross", "Heavy cross"],
-             {"Accepted": [r[f"{l} | TSP ON"]["proposals_accepted"] for l in lab],
-              "Rejected": [r[f"{l} | TSP ON"]["proposals_rejected"] for l in lab]}, [BLUE, ORANGE], fmt="{:.0f}")
-    _style(a2, "Priority proposals (negotiation)")
-    fig.suptitle("S5  Bus Transit Signal Priority", x=0.02, ha="left", fontsize=11)
-    out.append(_save(fig, outdir, "s5_bus_priority.png"))
+    _bars(a1, ["Conventional", "Ours"], [c["ambulance_trip_s"], o["ambulance_trip_s"]], [GREY, BLUE])
+    _style(a1, f"Ambulance trip time: {R['S5']['ambulance_trip_saved_pct']}% faster", "seconds")
+    _bars(a2, ["Conventional", "Ours"], [c["avg_wait_s"], o["avg_wait_s"]], [GREY, BLUE])
+    _style(a2, f"Average wait per car: {R['S5']['avg_wait_saved_pct']}% less", "seconds")
+    fig.suptitle("S5  Conventional city vs our system (same traffic, same accident)", x=0.02, ha="left", fontsize=11)
+    out.append(_save(fig, outdir, "s5_conventional_vs_ours.png"))
 
     # S6
     tr = R["S6"]["trace"]
