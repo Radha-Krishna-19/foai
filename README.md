@@ -1,7 +1,7 @@
 # Smart Traffic Management System (STMS)
 ### A multi-agent AI case study: 5 agent types, 5 team members, 43 automated tests
 
-**Problem.** Fixed-timing signals ignore real queues, and drivers on fixed routes keep driving into accidents. **Solution.** Make junctions and cars agents: junctions pick green by queue pressure (Max-Pressure), cars re-plan with A* when told about an accident, ambulances and buses negotiate priority. **Result.** Average wait -47% vs fixed timing; with a closed road 100% of cars arrive when re-routing vs 0% with fixed routes.
+**Problem.** Fixed-timing signals ignore real queues, and drivers on fixed routes keep driving into accidents. **Solution.** Make junctions and cars agents: junctions pick green by queue pressure (Max-Pressure), cars re-plan with A* when told about an accident, the ambulance gets a green corridor. **Result.** Average wait -47% vs fixed timing; with a closed road 100% of cars arrive when re-routing vs 0% with fixed routes.
 
 Intersections, cars, an ambulance and a Traffic Management Centre are **independent agents**.
 Each one senses, reasons and acts on its own, and they coordinate only through FIPA-ACL messages.
@@ -31,8 +31,9 @@ Each one senses, reasons and acts on its own, and they coordinate only through F
 
 ```
 pip install -r requirements.txt
-python run_demo.py                     # THE DEMO: local page; click roads to add/remove accidents
-python run_demo.py --static            # only write demo.html (default accident, no editing)
+START_DEMO.bat                         # Windows: double-click. Same as: python run_demo.py (click roads to add/remove accidents)
+python run_demo.py                     # THE DEMO: local page; click roads to add/remove several accidents
+python run_demo.py --static            # only write demo.html (works offline by double-click; one accident at a time)
 python run_simulation.py --all         # every experiment as a table (about 1 minute)
 python run_simulation.py --scenario 3  # one experiment: 1, 2, 3, 4, 5, 6, 7, 8
 python run_simulation.py --protocol    # the FIPA-ACL message log

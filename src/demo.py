@@ -66,7 +66,7 @@ def _run(variant, closed, duration=DURATION, seed=5):
         for n, v in cars.items():
             if v.departed and not v.has_arrived:
                 x, y = sim._drawn_xy(v)
-                frame["cars"][n] = [round(x), round(y), 1 if v.current_speed < 0.5 else 0, list(v.planned_path)]
+                frame["cars"][n] = [round(x), round(y), 1 if v.current_speed < 0.5 else 0]
                 if v.planned_path != last[n]:
                     old = last[n]
                     hit = any((old[i], old[i + 1]) in both for i in range(len(old) - 1))
@@ -85,11 +85,31 @@ def _run(variant, closed, duration=DURATION, seed=5):
     amb = cars["Ambulance"]
     summ = sim.summary()
     arrived = {n: (v.arrival_time if v.has_arrived else None) for n, v in cars.items()}
-    return {"frames": frames, "events": events, "arrived": arrived,
+    return {"frames": frames, "events": events, "arrived": arrived, "depart": AMBULANCE[2],
             "stats": {"ambulance_trip_s": (amb.arrival_time - amb.departure_time) if amb.has_arrived else None,
                       "ambulance_red_wait_s": amb.total_wait_time,
                       "avg_wait_s": summ["avg_wait_s"], "arrived": summ["arrived"], "spawned": summ["spawned"],
                       "rerouted": len({e["car"] for e in events if e["car"] != "Ambulance"})}}, original
+
+
+def inner_roads() -> List[tuple]:
+    """The 12 two-way roads between junctions of the 3x3 city (the ones an accident can close)."""
+    net = S.make_sim(3, 3).network
+    seen, out = set(), []
+    for seg in net.segments.values():
+        a, b = seg.source, seg.target
+        if a.startswith("INT") and b.startswith("INT") and (b, a) not in seen:
+            seen.add((a, b))
+            out.append((a, b))
+    return out
+
+
+def record_all_single() -> Dict[str, Any]:
+    """Pre-computed runs for 'no accident' and for each single closed road (used by the offline demo.html)."""
+    out = {"none": record([])}
+    for a, b in inner_roads():
+        out[f"{a}-{b}"] = record([(a, b)])
+    return out
 
 
 def record(closed=None) -> Dict[str, Any]:

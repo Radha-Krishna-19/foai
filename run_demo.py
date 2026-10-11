@@ -2,7 +2,7 @@
 Run the demo (interactive):     python run_demo.py
     Starts a small local page at http://localhost:8000 and opens it. Click any road to add or remove
     an accident; the real simulation re-runs each time.
-    python run_demo.py --static     only write demo.html / index.html (default accident, no editing)
+    python run_demo.py --static     only write demo.html / index.html (works offline; one accident road at a time)
     python run_demo.py --port 8080 --no-browser
 """
 import argparse
@@ -16,19 +16,26 @@ from urllib.parse import parse_qs, urlparse
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, ROOT)
-from src.demo import record, DEFAULT_CLOSED  # noqa: E402
+try:
+    import networkx  # noqa: F401
+except ImportError:                                  # first run on a fresh machine
+    import subprocess
+    print("Installing the required packages (one time) ...")
+    subprocess.call([sys.executable, "-m", "pip", "install", "-q", "-r", os.path.join(ROOT, "requirements.txt")])
+from src.demo import record, record_all_single, DEFAULT_CLOSED  # noqa: E402
 
 PAGE = os.path.join(ROOT, "src", "demo_page.html")
 
 
-def page_html(data) -> str:
-    return open(PAGE, encoding="utf-8").read().replace("__DATA__", json.dumps(data))
+def page_html(data, scenarios=None) -> str:
+    html = open(PAGE, encoding="utf-8").read()
+    return html.replace("__SCEN__", json.dumps(scenarios) if scenarios else "null").replace("__DATA__", json.dumps(data))
 
 
 def build(path=None):
     """Static copy with the default accident (used for GitHub Pages)."""
     path = path or os.path.join(ROOT, "demo.html")
-    html = page_html(record())
+    html = page_html(record(), record_all_single())
     for p in {path, os.path.join(ROOT, "index.html")}:
         with open(p, "w", encoding="utf-8") as f:
             f.write(html)

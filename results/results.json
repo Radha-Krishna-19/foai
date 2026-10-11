@@ -276,7 +276,7 @@
   "val_tuned_wait_s": 6.96,
   "val_fixed_time_wait_s": 17.02,
   "evaluations": 62,
-  "runtime_s": 12.7,
+  "runtime_s": 11.8,
   "trace": [
    {
     "restart": 0,
@@ -446,7 +446,7 @@
     "optimal_pct": 56.5,
     "avg_extra_cost_pct": 0.67,
     "worst_extra_cost_pct": 3.9,
-    "ms_per_search": 0.085
+    "ms_per_search": 0.061
    },
    "UCS (Dijkstra)": {
     "avg_nodes_expanded": 36.0,
@@ -454,7 +454,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.566
+    "ms_per_search": 0.317
    },
    "Greedy Best-First": {
     "avg_nodes_expanded": 7.7,
@@ -462,7 +462,7 @@
     "optimal_pct": 51.5,
     "avg_extra_cost_pct": 0.7,
     "worst_extra_cost_pct": 4.0,
-    "ms_per_search": 0.154
+    "ms_per_search": 0.117
    },
    "A* (Euclidean h)": {
     "avg_nodes_expanded": 14.1,
@@ -470,7 +470,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.209
+    "ms_per_search": 0.171
    },
    "A* (Manhattan h)": {
     "avg_nodes_expanded": 11.3,
@@ -478,7 +478,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.169
+    "ms_per_search": 0.147
    },
    "Weighted A* (w=2)": {
     "avg_nodes_expanded": 8.0,
@@ -486,7 +486,7 @@
     "optimal_pct": 57.0,
     "avg_extra_cost_pct": 0.51,
     "worst_extra_cost_pct": 4.0,
-    "ms_per_search": 0.128
+    "ms_per_search": 0.121
    }
   }
  },
@@ -511,7 +511,7 @@
     "mp_avg_wait_s": 11.49,
     "wait_reduction_pct": 44.5,
     "messages": 68,
-    "ms_per_tick": 0.21,
+    "ms_per_tick": 0.25,
     "arrived_pct": 100.0
    },
    "4x4": {
@@ -522,7 +522,7 @@
     "mp_avg_wait_s": 14.81,
     "wait_reduction_pct": 42.4,
     "messages": 133,
-    "ms_per_tick": 0.4,
+    "ms_per_tick": 0.37,
     "arrived_pct": 100.0
    },
    "5x5": {
@@ -533,7 +533,7 @@
     "mp_avg_wait_s": 19.88,
     "wait_reduction_pct": 44.4,
     "messages": 220,
-    "ms_per_tick": 0.62,
+    "ms_per_tick": 0.59,
     "arrived_pct": 100.0
    },
    "6x6": {
@@ -544,7 +544,7 @@
     "mp_avg_wait_s": 24.85,
     "wait_reduction_pct": 44.3,
     "messages": 345,
-    "ms_per_tick": 0.79,
+    "ms_per_tick": 0.78,
     "arrived_pct": 100.0
    },
    "8x8": {
@@ -555,7 +555,7 @@
     "mp_avg_wait_s": 30.3,
     "wait_reduction_pct": 46.6,
     "messages": 593,
-    "ms_per_tick": 1.35,
+    "ms_per_tick": 1.59,
     "arrived_pct": 100.0
    }
   }

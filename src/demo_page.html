@@ -4,111 +4,116 @@
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#6a7385;--line:#d9dde5;--good:#16794a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,Arial,sans-serif}
-header{padding:14px 20px;background:#1d2330;color:#fff}header h1{margin:0;font-size:18px}header p{margin:2px 0 0;color:#b9c0cf;font-size:13px}
-.wrap{max-width:1240px;margin:auto;padding:16px 20px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
-h2{font-size:15px;margin:0 0 8px}.mute{color:var(--mute);font-size:13px}
-.maps{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:860px){.maps,.two{grid-template-columns:1fr!important}}
-.maps h2 span{font-weight:400;color:var(--mute);font-size:12.5px;display:block}
-.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;margin-right:6px;background:#eceff4;color:#55607a}.tag.ours{background:#e2f4ea;color:#16794a}.tag.conv{background:#fdecec;color:#b02a2a}
+header{padding:12px 20px;background:#1d2330;color:#fff}header h1{margin:0;font-size:18px}header p{margin:2px 0 0;color:#b9c0cf;font-size:13px}
+.wrap{max-width:1280px;margin:auto;padding:12px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+h2{font-size:15px;margin:0 0 6px}.mute{color:var(--mute);font-size:13px}
+.maps{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:860px){.maps,.two{grid-template-columns:1fr!important}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:10px;margin-right:6px}.tag.ours{background:#e2f4ea;color:#16794a}.tag.conv{background:#fdecec;color:#b02a2a}
 canvas{width:100%;height:auto;display:block;background:#fff;border-radius:8px}
-.ctl{display:flex;gap:8px;align-items:center}.ctl button{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:14px;cursor:pointer}
+.cap{margin-top:6px;font-size:14px;line-height:1.5}.cap b{font-weight:700}.bad{color:#b02a2a}.ok{color:#16794a}
+.ctl{display:flex;gap:8px;align-items:center}.ctl button,button.b{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:14px;cursor:pointer}
 .ctl input{flex:1}.ctl span{min-width:60px;text-align:right;color:var(--mute);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.cc{display:flex;align-items:center;gap:6px;padding:6px 12px;border:2px solid var(--line);border-radius:20px;background:#fff;cursor:pointer;font-size:14px;font-weight:600}
+.cc i{width:12px;height:12px;border-radius:50%;display:inline-block}.cc.sel{border-color:#1d2330;background:#f1f5ff}
+.acc{display:inline-block;background:#222;color:#fff;border-radius:12px;padding:2px 4px 2px 10px;margin:0 6px 4px 0;font-size:13px}.acc button{background:none;border:0;color:#fff;cursor:pointer;font-size:15px}
 table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}
-th{font-size:12.5px;color:var(--mute);font-weight:600}td.win{color:var(--good);font-weight:600}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.car{display:grid;grid-template-columns:14px 1fr;gap:8px;padding:8px 6px;border-top:1px solid var(--line);cursor:pointer}.car:first-of-type{border-top:0}.car.sel{background:#f1f5ff;border-radius:6px}
-.dot{width:12px;height:12px;border-radius:50%;margin-top:4px}.route{color:var(--mute);font-size:12.5px;word-break:break-word}.why{font-size:12.5px;color:#9a5b00}
-.st{font-size:12px;padding:1px 7px;border-radius:10px;margin-left:6px;background:#e8f6ec;color:#1a7a3a}.st.re{background:#fff0d6;color:#9a5b00}.st.fin{background:#eceff4;color:#55607a}
-.chip{display:inline-block;background:#222;color:#fff;border-radius:12px;padding:2px 4px 2px 10px;margin:0 6px 4px 0;font-size:13px}.chip button{background:none;border:0;color:#fff;cursor:pointer;font-size:15px}
-code{background:#eef0f4;padding:1px 5px;border-radius:4px}.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--mute);margin-top:8px}.legend i{display:inline-block;vertical-align:middle;margin-right:5px}
-button.b{padding:6px 12px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;margin-right:6px}
+th{font-size:12.5px;color:var(--mute);font-weight:600}td.win{color:var(--good);font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.det{font-size:14px}.det .r{color:var(--mute);font-size:13px;word-break:break-word}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--mute);margin-top:8px}.legend i{display:inline-block;vertical-align:middle;margin-right:5px}
+code{background:#eef0f4;padding:1px 5px;border-radius:4px}
 </style></head><body>
 <header><h1>Smart Traffic Management - conventional city vs ours</h1>
-<p>Same cars, same traffic, same accident. Left: how cities work today. Right: our multi-agent system.</p></header>
+<p>Same cars, same traffic, same accident. Left: a city as it works today. Right: our multi-agent system.</p></header>
 <div class="wrap">
-<div class="card"><h2>The problem</h2><div style="font-size:14px">City traffic wastes time in three ways. <b>Fixed-timing signals</b> give the same green to an empty road as to a packed one. <b>Drivers</b> only learn about an accident when they run into it. And an <b>ambulance</b> sits at red lights like everyone else.<br>
-<b>Our solution:</b> every junction and car is an <i>agent</i>. Junctions pick green by the queues they see (Max-Pressure). The traffic centre broadcasts the accident and cars re-plan with A*. The ambulance asks junctions for a green corridor.</div></div>
+
+<div class="card" style="font-size:14px"><b>Problem:</b> fixed-timing lights ignore real queues, drivers only learn about an accident when they reach it, and ambulances wait at red lights.
+<b>Our solution:</b> junction agents give green to the busier road (Max-Pressure), the traffic centre alerts cars so they re-plan with A*, and the ambulance requests a green corridor.</div>
+
+<div class="card" id="edit"></div>
+
+<div class="card"><div class="mute" style="margin-bottom:6px"><b>Pick a car</b> to follow it. Its original route is the dashed line, the route it follows now is the thick coloured line.</div>
+<div class="chips" id="chips"></div><div class="det" id="det" style="margin-top:8px"></div></div>
 
 <div class="maps">
- <div class="card"><h2><span class="tag conv">CONVENTIONAL</span>Fixed-time lights, no alerts, no ambulance priority</h2><canvas id="c1" width="560" height="560"></canvas></div>
- <div class="card"><h2><span class="tag ours">OURS (STMS)</span>Max-Pressure lights, accident alerts + A*, ambulance green corridor</h2><canvas id="c2" width="560" height="560"></canvas></div>
+ <div class="card"><h2><span class="tag conv">CONVENTIONAL</span><span class="mute">fixed-time lights, no alerts, no ambulance priority</span></h2><canvas id="c1" width="600" height="600"></canvas><div class="cap" id="cap1"></div></div>
+ <div class="card"><h2><span class="tag ours">OURS</span><span class="mute">Max-Pressure lights, accident alerts + A*, ambulance green corridor</span></h2><canvas id="c2" width="600" height="600"></canvas><div class="cap" id="cap2"></div></div>
 </div>
 <div class="card"><div class="ctl"><button id="play">Pause</button><button id="rst">Restart</button><input id="seek" type="range" min="0" value="0"><span id="clock">t = 0 s</span></div>
- <div class="legend"><span><i style="width:26px;border-top:3px dashed #444"></i>original route of the selected car</span><span><i style="width:26px;border-top:5px solid #2563eb"></i>route it follows now</span><span><i style="width:12px;height:12px;background:#222"></i>accident (closed road)</span><span><i style="width:12px;height:12px;border-radius:50%;background:#dc2626"></i>ambulance (A)</span><span><i style="width:10px;height:10px;background:#2db84d"></i>green / <i style="width:10px;height:10px;background:#e03434"></i>red light</span></div></div>
+ <div class="legend"><span><i style="width:26px;border-top:3px dashed #444"></i>original route</span><span><i style="width:26px;border-top:6px solid #2563eb"></i>route followed now (arrows show direction)</span><span><i style="width:12px;height:12px;background:#222"></i>closed road (accident)</span><span><i style="width:12px;height:12px;border-radius:50%;background:#dc2626"></i>ambulance (A)</span><span><i style="width:10px;height:10px;background:#2db84d"></i>green / <i style="width:10px;height:10px;background:#e03434"></i>red light for that direction</span></div></div>
 
-<div class="card"><h2>Result (same run, whole simulation)</h2><table id="res"></table></div>
+<div class="card"><h2>Result (whole simulation)</h2><table id="res"></table></div>
 
-<div class="two">
- <div>
-  <div class="card" id="edit"></div>
-  <div class="card"><h2>What is happening</h2><ol style="margin:0 0 0 18px;padding:0;font-size:13.5px;color:#39425a">
-   <li>Every car runs <b>A*</b> at the start and drives the cheapest route (dashed line).</li>
-   <li>At t = <span id="ti"></span> s the accident closes the road(s) in black.</li>
-   <li><b>Conventional:</b> nobody is told. A driver only changes route when the closed road is the very next one. Lights switch on a fixed timer, so cars wait even when the other road is empty. The ambulance queues at red lights.</li>
-   <li><b>Ours:</b> the traffic centre <b>broadcasts</b> the accident; each car checks "is it on my route?" and, if so, runs <b>A* again</b>. Junction agents give green to the road with more waiting cars (<b>Max-Pressure</b>). The ambulance sends <b>PREEMPT_OVERRIDE</b>, junctions turn green for it and switch back after it passes.</li></ol></div>
- </div>
- <div class="card"><h2>The cars <span class="mute" style="font-weight:400">- click one to draw its routes on both maps</span></h2><div id="list"></div></div>
-</div>
+<div class="card"><h2>What is happening</h2><ol style="margin:0 0 0 18px;padding:0;font-size:13.5px;color:#39425a">
+ <li>Every car runs <b>A*</b> at the start and drives its cheapest route (dashed).</li>
+ <li>At t = <span id="ti"></span> s the black road(s) close.</li>
+ <li><b>Conventional:</b> nobody is told. A driver only changes route when the closed road is the very next one. Lights switch on a fixed timer, so cars wait even when the other road is empty, and the ambulance queues at red lights.</li>
+ <li><b>Ours:</b> the traffic centre <b>broadcasts</b> the accident; each car checks &ldquo;is it on my route?&rdquo; and runs <b>A* again</b> if so. Junctions give green to the road with more waiting cars (<b>Max-Pressure</b>). The ambulance sends <b>PREEMPT_OVERRIDE</b>, junctions turn green for it and resume normal control after it passes.</li></ol></div>
 </div>
 <script>
-let D=__DATA__;
+let D=__DATA__;const SCEN=__SCEN__;
 const cvs=[document.getElementById('c1'),document.getElementById('c2')],gs=cvs.map(c=>c.getContext('2d'));
-const W=560;let S,x0,y0,sel=0,f=0,playing=true,last=0,canEdit=false,hover=null;
-const short=n=>n.replace('INT_','J');
+const W=600;let S,x0,y0,sel=0,f=0,playing=true,last=0,mode='none',hover=null;   // mode: none | static | server
+const short=n=>n.replace('INT_','J'),key=(a,b)=>[a,b].sort().join('|');
 const X=x=>(x-x0)*S,Y=y=>W-(y-y0)*S,P=n=>[X(D.nodes[n][0]),Y(D.nodes[n][1])];
 const seek=document.getElementById('seek');
-const key=(a,b)=>[a,b].sort().join('|');
+function routeAt(run,c,t){let r=c.original;run.events.forEach(e=>{if(e.car===c.name&&e.t<=t)r=e.new});return r}
 function apply(d,keep){D=d;const xs=Object.values(D.nodes).map(p=>p[0]),ys=Object.values(D.nodes).map(p=>p[1]);
   x0=Math.min(...xs)-40;y0=Math.min(...ys)-40;S=Math.min(W/(Math.max(...xs)+40-x0),W/(Math.max(...ys)+40-y0));
   seek.max=D.frames-1;document.getElementById('ti').textContent=D.incident.t;f=keep?Math.min(f,D.frames-1):0;
-  D.ev={ours:{},conv:{}};['ours','conv'].forEach(k=>D[k].events.forEach(e=>{if(!D.ev[k][e.car])D.ev[k][e.car]=e}));
-  renderEditor();renderResults();draw()}
-function line(g,path,col,w,dash){g.save();g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash);g.lineCap='round';g.lineJoin='round';g.beginPath();path.forEach((n,i)=>{const[p,q]=P(n);i?g.lineTo(p,q):g.moveTo(p,q)});g.stroke();g.restore()}
+  ['ours','conv'].forEach(k=>{const run=D[k];run.red=[];let n=0;run.frames.forEach((fr,i)=>{const a=fr.cars['Ambulance'];if(a&&a[2])n++;run.red.push(n)})});
+  renderEditor();renderResults();renderChips();draw()}
+function arrow(g,a,b,col){const[p,q]=P(a),[r,s]=P(b),mx=(p+r)/2,my=(q+s)/2,ang=Math.atan2(s-q,r-p);g.save();g.translate(mx,my);g.rotate(ang);g.fillStyle='#fff';g.beginPath();g.moveTo(7,0);g.lineTo(-5,-6);g.lineTo(-5,6);g.closePath();g.fill();g.restore()}
+function line(g,path,col,w,dash,arrows){g.save();g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash);g.lineCap='round';g.lineJoin='round';g.beginPath();path.forEach((n,i)=>{const[p,q]=P(n);i?g.lineTo(p,q):g.moveTo(p,q)});g.stroke();g.restore();if(arrows)for(let i=0;i<path.length-1;i++)arrow(g,path[i],path[i+1],col)}
 function drawMap(g,run){const fr=run.frames[f],t=f+1,on=t>=D.incident.t;g.clearRect(0,0,W,W);g.lineCap='round';
-  g.strokeStyle='#c9ced8';g.lineWidth=14*S/1.2;D.roads.forEach(([a,b])=>{const[p,q]=P(a),[r,s]=P(b);g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke()});
-  if(on)D.incident.roads.forEach(([a,b])=>{const[p,q]=P(a),[r,s]=P(b);g.strokeStyle='#222';g.lineWidth=14*S/1.2;g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke();g.fillStyle='#d11';g.font='bold 12px system-ui';g.textAlign='left';g.fillText('ACCIDENT',(p+r)/2+10,(q+s)/2)});
-  if(canEdit&&hover&&run===D.ours){const[a,b]=hover,[p,q]=P(a),[r,s]=P(b);g.save();g.strokeStyle='#f0b400';g.lineWidth=5;g.setLineDash([4,4]);g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke();g.restore()}
-  const c=D.cars[sel],cur=fr.cars[c.name],ev=(run===D.ours?D.ev.ours:D.ev.conv)[c.name],re=ev&&t>=ev.t;
-  line(g,c.original,'#444',3,[8,7]);if(cur)line(g,re?cur[3]:c.original,c.colour,5,[]);
-  g.fillStyle='#444';g.font='bold 11px system-ui';g.textAlign='left';const[sx,sy]=P(c.from),[ex,ey]=P(c.to);g.fillText('START',sx+6,sy-6);g.fillText('END',ex+6,ey-6);
+  g.strokeStyle='#d3d8e1';g.lineWidth=14*S/1.2;D.roads.forEach(([a,b])=>{const[p,q]=P(a),[r,s]=P(b);g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke()});
+  if(on)D.incident.roads.forEach(([a,b])=>{const[p,q]=P(a),[r,s]=P(b);g.strokeStyle='#222';g.lineWidth=14*S/1.2;g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke();g.fillStyle='#d11';g.font='bold 13px system-ui';g.textAlign='left';g.fillText('ACCIDENT',(p+r)/2+12,(q+s)/2)});
+  if(mode!=='none'&&hover&&run===D.ours){const[a,b]=hover,[p,q]=P(a),[r,s]=P(b);g.save();g.strokeStyle='#f0b400';g.lineWidth=7;g.setLineDash([5,5]);g.beginPath();g.moveTo(p,q);g.lineTo(r,s);g.stroke();g.restore()}
+  const c=D.cars[sel],cur=fr.cars[c.name];line(g,c.original,'#444',3,[8,7],false);if(cur)line(g,routeAt(run,c,t),c.colour,7,[],true);
+  g.fillStyle='#222';g.font='bold 12px system-ui';g.textAlign='center';const[sx,sy]=P(c.from),[ex,ey]=P(c.to);
+  g.fillStyle='#16a34a';g.beginPath();g.arc(sx,sy,6,0,7);g.fill();g.fillStyle='#222';g.fillText('START',sx,sy-11);g.fillStyle='#222';g.fillRect(ex-6,ey-6,12,12);g.fillText('END',ex,ey-11);
   D.signals.forEach(id=>{const[p,q]=P(id),ph=fr.light[id],ns=ph==='NS_GREEN',ew=ph==='EW_GREEN',g2=ns||ew;
-    g.fillStyle='#fff';g.strokeStyle='#8a93a6';g.lineWidth=1;g.fillRect(p-11,q-11,22,22);g.strokeRect(p-11,q-11,22,22);
-    const col=go=>go?'#2db84d':g2?'#e03434':'#f0b400';g.fillStyle=col(ns);g.fillRect(p-3,q-11,6,22);g.fillStyle=col(ew);g.fillRect(p-11,q-3,22,6);
-    g.fillStyle='#39425a';g.font='10px system-ui';g.textAlign='center';g.fillText(short(id),p,q-15)});
+    g.fillStyle='#fff';g.strokeStyle='#8a93a6';g.lineWidth=1;g.fillRect(p-12,q-12,24,24);g.strokeRect(p-12,q-12,24,24);
+    const col=go=>go?'#2db84d':g2?'#e03434':'#f0b400';g.fillStyle=col(ns);g.fillRect(p-3,q-12,6,24);g.fillStyle=col(ew);g.fillRect(p-12,q-3,24,6);
+    g.fillStyle='#39425a';g.font='bold 10px system-ui';g.textAlign='center';g.fillText(short(id),p,q-16)});
   g.fillStyle='#8a93a6';g.font='10px system-ui';g.textAlign='center';Object.keys(D.nodes).filter(n=>!n.startsWith('INT')).forEach(n=>{const[p,q]=P(n);g.fillText(n,p,q+4)});
-  g.fillStyle='#9aa3b5';fr.bg.forEach(([x,y])=>{g.beginPath();g.arc(X(x),Y(y),3,0,7);g.fill()});
-  D.cars.forEach(c=>{const v=fr.cars[c.name];if(!v)return;const px=X(v[0]),py=Y(v[1]),amb=c.name==='Ambulance';
-    g.fillStyle=c.colour;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.arc(px,py,amb?9:7,0,7);g.fill();g.stroke();
-    g.fillStyle='#fff';g.font='bold 9px system-ui';g.textAlign='center';g.fillText(amb?'A':c.name.slice(4),px,py+3)});
-  const done=Object.entries(run.arrived).filter(([n,a])=>a&&t>=a).length;g.fillStyle='#39425a';g.font='bold 12px system-ui';g.textAlign='right';g.fillText('arrived: '+done+' / '+D.cars.length+' tracked',W-8,16)}
-function draw(){drawMap(gs[0],D.conv);drawMap(gs[1],D.ours);document.getElementById('clock').textContent='t = '+(f+1)+' s';seek.value=f;renderList()}
-function renderResults(){const a=D.conv.stats,b=D.ours.stats,pct=(x,y)=>x&&y!=null?Math.round(100*(x-y)/x)+'% less':'';
+  g.fillStyle='#aab1c0';fr.bg.forEach(([x,y])=>{g.beginPath();g.arc(X(x),Y(y),3,0,7);g.fill()});
+  D.cars.forEach((cc,i)=>{const v=fr.cars[cc.name];if(!v)return;const px=X(v[0]),py=Y(v[1]),amb=cc.name==='Ambulance',me=i===sel;
+    g.globalAlpha=me||amb?1:.55;g.fillStyle=cc.colour;g.strokeStyle=me?'#000':'#fff';g.lineWidth=me?3:2;g.beginPath();g.arc(px,py,amb?11:me?10:8,0,7);g.fill();g.stroke();
+    g.globalAlpha=1;g.fillStyle='#fff';g.font='bold 10px system-ui';g.textAlign='center';g.fillText(amb?'A':cc.name.slice(4),px,py+3.5)})}
+function capHTML(run,isOurs){const t=f+1,c=D.cars[sel],amb=D.cars.find(x=>x.name==='Ambulance'),a=run.frames[f].cars['Ambulance'],arr=run.arrived['Ambulance'],dep=amb?run.depart:0;
+  let h='';const redNow=run.red[f];
+  if(arr&&t>=arr)h+=`<div>Ambulance: <b class="${isOurs?'ok':'bad'}">arrived after ${arr-run.depart} s</b> (${redNow} s stopped at red lights)</div>`;
+  else if(!a)h+=`<div>Ambulance: not started yet</div>`;
+  else h+=`<div>Ambulance: ${t-run.depart} s on the road, <b class="${redNow>0&&!isOurs?'bad':'ok'}">${redNow} s stopped at red lights</b>${a[2]?' &mdash; <b class="bad">waiting at a light now</b>':''}</div>`;
+  const done=Object.entries(run.arrived).filter(([n,x])=>x&&t>=x).length;h+=`<div class="mute">${done} of ${D.cars.length} tracked vehicles have arrived</div>`;return h}
+function draw(){drawMap(gs[0],D.conv);drawMap(gs[1],D.ours);document.getElementById('clock').textContent='t = '+(f+1)+' s';seek.value=f;
+  document.getElementById('cap1').innerHTML=capHTML(D.conv,false);document.getElementById('cap2').innerHTML=capHTML(D.ours,true);renderDet()}
+function renderChips(){document.getElementById('chips').innerHTML=D.cars.map((c,i)=>`<div class="cc${i===sel?' sel':''}" onclick="pick(${i})"><i style="background:${c.colour}"></i>${c.name}</div>`).join('')}
+function pick(i){sel=i;renderChips();draw()}
+function renderDet(){const c=D.cars[sel],t=f+1;const line=(run,label,cls)=>{const evs=run.events.filter(e=>e.car===c.name&&e.t<=t),e=evs[evs.length-1],arr=run.arrived[c.name];
+  return `<div><span class="tag ${cls}">${label}</span>${e?`<b>re-routed at t=${e.t}s</b>: ${e.why}.`:(t>=D.incident.t&&D.incident.roads.length?'keeps its original route.':'on its original route.')} ${arr?'Arrives at t='+arr+' s.':'Does not arrive in the simulation.'}${e?`<div class="r">now: ${e.new.map(short).join(' - ')}</div>`:''}</div>`};
+  document.getElementById('det').innerHTML=`<b>${c.name}</b> goes ${c.from} &rarr; ${c.to}. <span class="r">Original route: ${c.original.map(short).join(' - ')}</span>`+line(D.conv,'Conventional','conv')+line(D.ours,'Ours','ours')}
+function renderResults(){const a=D.conv.stats,b=D.ours.stats;
   const rows=[['Ambulance trip time (s)',a.ambulance_trip_s,b.ambulance_trip_s,'less'],['Ambulance time stopped at red (s)',a.ambulance_red_wait_s,b.ambulance_red_wait_s,'less'],['Average wait per car (s)',a.avg_wait_s,b.avg_wait_s,'less'],['Cars that reached their destination',a.arrived+' / '+a.spawned,b.arrived+' / '+b.spawned,'more'],['Tracked cars re-routed',a.rerouted,b.rerouted,'-']];
   document.getElementById('res').innerHTML='<tr><th>Measure</th><th>Conventional</th><th>Ours</th><th>Change</th></tr>'+rows.map(([m,x,y,k])=>{const num=typeof x==='number'&&typeof y==='number';const ch=num&&k==='less'&&x>0?Math.round(100*(x-y)/x)+'% less':'';return `<tr><td>${m}</td><td>${x==null?'did not finish':x}</td><td class="${k==='less'||k==='more'?'win':''}">${y==null?'did not finish':y}</td><td class="win">${ch}</td></tr>`}).join('')}
-function st(run,c){const t=f+1,v=run.frames[f].cars[c.name],e=(run===D.ours?D.ev.ours:D.ev.conv)[c.name],arr=run.arrived[c.name];
-  if(!v)return arr&&t>=arr?`<span class="st fin">arrived t=${arr}</span>`:'<span class="st fin">not started</span>';
-  return e&&t>=e.t?'<span class="st re">RE-ROUTED</span>':'<span class="st">original route</span>'}
-function renderList(){document.getElementById('list').innerHTML=D.cars.map((c,i)=>{const eo=D.ev.ours[c.name],ec=D.ev.conv[c.name],t=f+1;
-  let h=`<b>${c.name}</b> ${c.from} &rarr; ${c.to}<div class="route">original: ${c.original.map(short).join(' - ')}</div>`;
-  h+=`<div class="route"><span class="tag conv">Conventional</span>${st(D.conv,c)} ${D.conv.arrived[c.name]?'arrives t='+D.conv.arrived[c.name]:'not arrived'}</div>`;
-  if(ec&&t>=ec.t)h+=`<div class="route">now: ${ec.new.map(short).join(' - ')}</div><div class="why">t=${ec.t}s: ${ec.why}</div>`;
-  h+=`<div class="route"><span class="tag ours">Ours</span>${st(D.ours,c)} ${D.ours.arrived[c.name]?'arrives t='+D.ours.arrived[c.name]:'not arrived'}</div>`;
-  if(eo&&t>=eo.t)h+=`<div class="route">now: <b>${eo.new.map(short).join(' - ')}</b></div><div class="why">t=${eo.t}s: ${eo.why}; A* found a new route.</div>`;
-  else if(t>=D.incident.t&&D.incident.roads.length)h+=`<div class="route">no closed road on this route - no change needed.</div>`;
-  return `<div class="car${i===sel?' sel':''}" onclick="sel=${i};draw()"><div class="dot" style="background:${c.colour}"></div><div>${h}</div></div>`}).join('')}
 const innerRoads=()=>{const seen=new Set(),out=[];D.roads.forEach(([a,b])=>{if(a.startsWith('INT')&&b.startsWith('INT')&&!seen.has(key(a,b))){seen.add(key(a,b));out.push([a,b])}});return out};
-function renderEditor(){const list=D.incident.roads.map(([a,b])=>`<span class="chip">${short(a)} - ${short(b)} ${canEdit?`<button onclick="toggleRoad('${a}','${b}')" title="reopen">&times;</button>`:''}</span>`).join('')||'<span class="mute">none - all roads open</span>';
-  document.getElementById('edit').innerHTML=canEdit?`<h2>Accident roads <span class="mute" style="font-weight:400">(closed at t = ${D.incident.t} s)</span></h2><div style="margin:6px 0">${list}</div><div class="mute">Click a road between two junctions on the <b>right map</b> to add an accident, click it again (or the &times;) to remove it. Both cities are re-simulated.</div><div style="margin-top:8px"><button class="b" onclick="setRoads([])">Open all roads</button><button class="b" onclick="setRoads(null)">Back to default</button></div>`
-   :`<h2>Accident roads</h2><div style="margin:6px 0">${list}</div><div class="mute">Adding or removing accidents needs the local version: run <code>python run_demo.py</code> (this online copy shows the default accident only).</div>`}
-function toggleRoad(a,b){const k=key(a,b),cur=D.incident.roads.filter(([x,y])=>key(x,y)!==k);if(cur.length===D.incident.roads.length)cur.push([a,b]);setRoads(cur)}
-function setRoads(r){if(!canEdit)return;const q=r===null?'default=1':'closed='+r.map(x=>x.join('-')).join(',');fetch('/api/run?'+q).then(x=>x.json()).then(d=>apply(d,false)).catch(()=>{canEdit=false;renderEditor()})}
-function roadAt(ev,cv){const r=cv.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width,my=(ev.clientY-r.top)*W/r.height;let best=null,bd=14;
+function renderEditor(){const list=D.incident.roads.map(([a,b])=>`<span class="acc">${short(a)} - ${short(b)} ${mode!=='none'?`<button onclick="toggleRoad('${a}','${b}')" title="remove this accident">&times;</button>`:''}</span>`).join('')||'<span class="mute">none - every road is open</span>';
+  const how=mode==='server'?'Click any road on the <b>right map</b> to <b>add</b> an accident there (you can add several). Click it again, or the &times;, to <b>remove</b> it.':
+    mode==='static'?'Click a road on the <b>right map</b> to put an accident there. Click it again to remove it. (This offline page shows one accident at a time; <code>python run_demo.py</code> allows several.)':'Editing is not available in this copy. Run <code>python run_demo.py</code>.';
+  document.getElementById('edit').innerHTML=`<b>Accident roads</b> <span class="mute">(closed at t = ${D.incident.t} s)</span> &nbsp; ${list}<div class="mute" style="margin-top:4px">${how}</div>`+(mode!=='none'?`<div style="margin-top:6px"><button class="b" onclick="setRoads([])">Remove all accidents</button> <button class="b" onclick="setRoads(null)">Back to default</button></div>`:'')}
+function toggleRoad(a,b){const k=key(a,b),has=D.incident.roads.some(([x,y])=>key(x,y)===k);
+  if(mode==='server'){const cur=D.incident.roads.filter(([x,y])=>key(x,y)!==k);if(!has)cur.push([a,b]);setRoads(cur)}
+  else if(mode==='static'){setRoads(has?[]:[[a,b]])}}
+function setRoads(r){
+  if(mode==='server'){const q=r===null?'default=1':'closed='+r.map(x=>x.join('-')).join(',');fetch('/api/run?'+q).then(x=>x.json()).then(d=>apply(d,false)).catch(()=>{mode='none';renderEditor()})}
+  else if(mode==='static'){const k=r===null?'INT_01-INT_11':(r.length?r[0].join('-'):'none');const d=SCEN[k]||SCEN['none'];apply(d,false)}}
+function roadAt(ev,cv){const r=cv.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width,my=(ev.clientY-r.top)*W/r.height;let best=null,bd=16;
   innerRoads().forEach(([a,b])=>{const[p,q]=P(a),[x,y]=P(b),dx=x-p,dy=y-q,t=Math.max(0,Math.min(1,((mx-p)*dx+(my-q)*dy)/(dx*dx+dy*dy))),d=Math.hypot(mx-(p+t*dx),my-(q+t*dy));if(d<bd){bd=d;best=[a,b]}});return best}
-cvs.forEach(cv=>{cv.onmousemove=e=>{if(!canEdit)return;hover=roadAt(e,cv);cv.style.cursor=hover?'pointer':'default';draw()};cv.onmouseleave=()=>{hover=null;draw()};cv.onclick=e=>{if(!canEdit)return;const r=roadAt(e,cv);if(r)toggleRoad(r[0],r[1])}});
+cvs.forEach(cv=>{cv.onmousemove=e=>{if(mode==='none')return;hover=roadAt(e,cv);cv.style.cursor=hover?'pointer':'default';draw()};cv.onmouseleave=()=>{hover=null;draw()};cv.onclick=e=>{if(mode==='none')return;const r=roadAt(e,cv);if(r)toggleRoad(r[0],r[1])}});
 document.getElementById('play').onclick=e=>{playing=!playing;e.target.textContent=playing?'Pause':'Play'};
 document.getElementById('rst').onclick=()=>{f=0;draw()};seek.oninput=()=>{f=+seek.value;draw()};
 function tick(ts){if(playing&&ts-last>150){last=ts;if(f<D.frames-1){f++;draw()}else{playing=false;document.getElementById('play').textContent='Play'}}requestAnimationFrame(tick)}
-apply(D,false);requestAnimationFrame(tick);
-fetch('/api/run?default=1').then(r=>r.ok?r.json():Promise.reject()).then(d=>{canEdit=true;apply(d,false)}).catch(()=>{});
+if(SCEN)mode='static';apply(D,false);requestAnimationFrame(tick);
+fetch('/api/run?default=1').then(r=>r.ok?r.json():Promise.reject()).then(d=>{mode='server';apply(d,false)}).catch(()=>{});
 </script></body></html>

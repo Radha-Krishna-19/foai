@@ -3,7 +3,7 @@
  "passed": 43,
  "failed": 0,
  "errors": 0,
- "seconds": 17.6,
+ "seconds": 19.2,
  "python": "3.11.15",
  "rows": [
   {
@@ -66,7 +66,7 @@
    "description": "SAFETY - no signal ever goes directly from one green to the other (always via YELLOW), even with ambulance preemption",
    "status": "PASS",
    "actual": "212 phase changes checked: 0 green->green, 0 yellows shorter than 3 s",
-   "seconds": 0.07,
+   "seconds": 0.08,
    "detail": ""
   },
   {
@@ -102,7 +102,7 @@
    "description": "every vehicle is on at most one road, no road exceeds capacity, and all vehicles arrive",
    "status": "PASS",
    "actual": "180 vehicles, all arrived at t=397 s; peak road occupancy 35%",
-   "seconds": 0.14,
+   "seconds": 0.13,
    "detail": ""
   },
   {
@@ -111,7 +111,7 @@
    "description": "the same seed gives exactly the same result (reproducible experiments)",
    "status": "PASS",
    "actual": "two runs identical: avg wait 8.34 s, 21 messages",
-   "seconds": 0.1,
+   "seconds": 0.07,
    "detail": ""
   },
   {
@@ -120,7 +120,7 @@
    "description": "Max-Pressure reduces average wait by at least 25% vs Fixed-Time, all vehicles arrive",
    "status": "PASS",
    "actual": "15.36 s -> 8.2 s (46.6% less)",
-   "seconds": 0.85,
+   "seconds": 1.07,
    "detail": ""
   },
   {
@@ -129,7 +129,7 @@
    "description": "with anti-starvation no minority vehicle is left unserved; without it some are",
    "status": "PASS",
    "actual": "starved E-W cars: with = 0, without = 10",
-   "seconds": 0.96,
+   "seconds": 1.2,
    "detail": ""
   },
   {
@@ -138,7 +138,7 @@
    "description": "preemption gives the ambulance zero signal delay, >= 20% faster, < 1 s cost to others",
    "status": "PASS",
    "actual": "54.0 s -> 38.0 s (29.6% faster), others -0.05 s",
-   "seconds": 0.35,
+   "seconds": 0.42,
    "detail": ""
   },
   {
@@ -147,7 +147,7 @@
    "description": "closure - static routing strands vehicles, re-routing delivers 100%; slowdown - broadcast >= 20% faster than local",
    "status": "PASS",
    "actual": "closure: static 0%, broadcast 100%; slowdown: local 144.61 s vs broadcast 95.47 s",
-   "seconds": 0.64,
+   "seconds": 0.72,
    "detail": ""
   },
   {
@@ -156,7 +156,7 @@
    "description": "vs a conventional city, our system moves the ambulance faster and cuts average wait",
    "status": "PASS",
    "actual": "ambulance 126.0 -> 73.0 s, avg wait 21.25 -> 9.59 s",
-   "seconds": 0.21,
+   "seconds": 0.23,
    "detail": ""
   },
   {
@@ -174,7 +174,7 @@
    "description": "hill-climbing-tuned parameters beat the defaults on unseen validation traffic",
    "status": "PASS",
    "actual": "validation wait 8.65 s -> 6.96 s; params pushed to agents",
-   "seconds": 13.17,
+   "seconds": 14.08,
    "detail": ""
   },
   {
@@ -182,8 +182,8 @@
    "suite": "test_scenarios",
    "description": "2x2-4x4 grids all clear, Max-Pressure beats Fixed-Time at every size",
    "status": "PASS",
-   "actual": "2x2: 45.4% less wait, 0.13 ms/tick; 3x3: 44.5% less wait, 0.28 ms/tick; 4x4: 42.4% less wait, 0.4 ms/tick",
-   "seconds": 0.73,
+   "actual": "2x2: 45.4% less wait, 0.15 ms/tick; 3x3: 44.5% less wait, 0.34 ms/tick; 4x4: 42.4% less wait, 0.42 ms/tick",
+   "seconds": 0.81,
    "detail": ""
   },
   {
