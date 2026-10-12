@@ -1,8 +1,9 @@
 """
 Run the demo (interactive):     python run_demo.py
-    Starts a small local page at http://localhost:8000 and opens it. Click any road to add or remove
-    an accident; the real simulation re-runs each time.
-    python run_demo.py --static     only write demo.html / index.html (works offline; one accident road at a time)
+    Starts a small local page at http://localhost:8000 and opens it. Dense random traffic; press
+    "Send Car / Send Ambulance" (random start -> random destination) and click roads to add/remove accidents.
+    The real simulation re-runs each time.
+    python run_demo.py --static     only write demo.html / index.html (a fixed example; not interactive)
     python run_demo.py --port 8080 --no-browser
 """
 import argparse
@@ -22,24 +23,37 @@ except ImportError:                                  # first run on a fresh mach
     import subprocess
     print("Installing the required packages (one time) ...")
     subprocess.call([sys.executable, "-m", "pip", "install", "-q", "-r", os.path.join(ROOT, "requirements.txt")])
-from src.demo import record, record_all_single, DEFAULT_CLOSED  # noqa: E402
+from src.demo import record, DEFAULT_CLOSED  # noqa: E402
 
 PAGE = os.path.join(ROOT, "src", "demo_page.html")
 
 
-def page_html(data, scenarios=None) -> str:
+def page_html(data, live=False) -> str:
     html = open(PAGE, encoding="utf-8").read()
-    return html.replace("__SCEN__", json.dumps(scenarios) if scenarios else "null").replace("__DATA__", json.dumps(data))
+    return html.replace("__LIVE__", "true" if live else "false").replace("__DATA__", json.dumps(data))
 
 
 def build(path=None):
-    """Static copy with the default accident (used for GitHub Pages)."""
+    """Static copy with a fixed example (used for GitHub Pages)."""
     path = path or os.path.join(ROOT, "demo.html")
-    html = page_html(record(), record_all_single())
+    html = page_html(record())
     for p in {path, os.path.join(ROOT, "index.html")}:
         with open(p, "w", encoding="utf-8") as f:
             f.write(html)
     return path
+
+
+KEY = {"car1": "Car 1", "amb": "Ambulance"}
+
+
+def parse_dispatch(text):
+    """'car1:N0:S2:35;amb:W1:E0:50' -> [('Car 1','N0','S2',35), ...]"""
+    out = []
+    for part in filter(None, text.split(";")):
+        k, o, d, t = part.split(":")
+        if k in KEY and o != d:
+            out.append((KEY[k], o, d, int(float(t))))
+    return out
 
 
 def parse_closed(text):
@@ -67,9 +81,11 @@ class Handler(BaseHTTPRequestHandler):
         if u.path == "/api/run":
             q = parse_qs(u.query)
             closed = DEFAULT_CLOSED if "default" in q else parse_closed(q.get("closed", [""])[0])
-            self._send(json.dumps(record(closed)).encode(), "application/json")
+            disp = parse_dispatch(q.get("disp", [""])[0])
+            seed = int(q.get("seed", ["5"])[0])
+            self._send(json.dumps(record(closed, disp, seed)).encode(), "application/json")
         elif u.path in ("/", "/index.html"):
-            self._send(page_html(record()).encode("utf-8"), "text/html; charset=utf-8")
+            self._send(page_html(record(DEFAULT_CLOSED, []), live=True).encode("utf-8"), "text/html; charset=utf-8")
         else:
             self.send_error(404)
 

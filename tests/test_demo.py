@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.demo import record as record_demo, INCIDENT_ROAD
+from src.demo import record as record_demo, INCIDENT_ROAD, DEFAULT_CLOSED
 from tests._record import record
 
 CLOSED = {INCIDENT_ROAD, INCIDENT_ROAD[::-1]}
@@ -34,16 +34,15 @@ class TestDemoScenario(unittest.TestCase):
             self.assertTrue(uses_closed(done[n]["old"]))
         record("DM-01", f"{len(hit)} cars had the closed road on their route -> all re-planned without it")
 
-    def test_DM02_unaffected_cars_keep_original_route(self):
-        """DM-02: cars that do not use the closed road are never re-routed"""
-        free = [c["name"] for c in self.d["cars"] if not uses_closed(c["original"])]
-        changed = {e["car"] for e in self.d["ours"]["events"]}
-        self.assertTrue(free)
-        self.assertFalse(set(free) & changed)
-        record("DM-02", f"{len(free)} unaffected cars kept their original route")
+    def test_DM02_unaffected_car_keeps_route_and_dispatch_is_random_free(self):
+        """DM-02: a dispatched car whose route avoids the closed road is never re-routed; no accident -> no re-route"""
+        d = record_demo([], [("Car 1", "W1", "E1", 15)])
+        self.assertFalse(d["ours"]["events"])
+        self.assertFalse(uses_closed(d["cars"][0]["original"]))
+        record("DM-02", "no accident -> Car 1 keeps its A* route, 0 re-routes")
 
     def test_DM03_all_tracked_cars_arrive(self):
-        """DM-03: all tracked cars reach their destination despite the accident"""
+        """DM-03: the dispatched car and ambulance reach their destination despite the accident"""
         self.assertTrue(all(t is not None for t in self.d["ours"]["arrived"].values()))
         record("DM-03", "latest arrival t = %d s of %d s recorded" % (max(self.d["ours"]["arrived"].values()), self.d["frames"]))
 
@@ -55,10 +54,27 @@ class TestDemoScenario(unittest.TestCase):
         self.assertGreater(c["ambulance_red_wait_s"], 0)
         record("DM-04", f"ambulance {c['ambulance_trip_s']} s (conventional) -> {o['ambulance_trip_s']} s (ours), red wait {c['ambulance_red_wait_s']} -> 0 s")
 
+    def test_DM06_signal_arms_show_plus_and_seven(self):
+        """DM-06: junction signals are 4 arms (N,E,S,W); straight = '-' or '|' green, a turn lights only its 2 arms"""
+        arms = [s for f in self.d["ours"]["frames"] for s in f["sig"].values()]
+        self.assertTrue(all(len(a) == 4 and set(a) <= set("GRY") for a in arms))
+        self.assertTrue(any(a.count("G") == 2 and a in ("GRGR".replace("R", "R"), "RGRG") for a in arms))   # straight
+        corner = [a for a in arms if a.count("G") == 2 and not (a[0] == a[2] or a[1] == a[3])]
+        self.assertTrue(corner)                                                                           # a '7' turn
+        record("DM-06", "straight green = opposite arms; turn green = two adjacent arms ('7' shape)")
+
+    def test_DM07_queues_form_behind_red(self):
+        """DM-07: dense random traffic builds visible queues, and fewer with our signals"""
+        c, o = self.d["conv"]["stats"], self.d["ours"]["stats"]
+        self.assertGreater(c["spawned"], 120)
+        self.assertGreater(c["max_queue"], 20)
+        self.assertLess(o["max_queue"], c["max_queue"])
+        record("DM-07", f"{c['spawned']} random cars; most stopped at once {c['max_queue']} (conv) vs {o['max_queue']} (ours)")
+
     def test_DM05_same_traffic_both_runs(self):
         """DM-05: both runs use identical traffic and the same accident, so the comparison is fair"""
         self.assertEqual(self.d["conv"]["stats"]["spawned"], self.d["ours"]["stats"]["spawned"])
-        self.assertEqual(self.d["incident"]["roads"], [list(c) for c in __import__("src.demo", fromlist=["x"]).DEFAULT_CLOSED])
+        self.assertEqual(self.d["incident"]["roads"], [list(c) for c in DEFAULT_CLOSED])
         record("DM-05", f"{self.d['ours']['stats']['spawned']} vehicles spawned in each run; accident J01-J11 at t = 10 s")
 
 

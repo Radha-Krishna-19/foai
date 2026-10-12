@@ -33,7 +33,7 @@ Each one senses, reasons and acts on its own, and they coordinate only through F
 pip install -r requirements.txt
 START_DEMO.bat                         # Windows: double-click. Same as: python run_demo.py (click roads to add/remove accidents)
 python run_demo.py                     # THE DEMO: local page; click roads to add/remove several accidents
-python run_demo.py --static            # only write demo.html (works offline by double-click; one accident at a time)
+python run_demo.py --static            # only write demo.html (fixed example, double-click; no buttons)
 python run_simulation.py --all         # every experiment as a table (about 1 minute)
 python run_simulation.py --scenario 3  # one experiment: 1, 2, 3, 4, 5, 6, 7, 8
 python run_simulation.py --protocol    # the FIPA-ACL message log
@@ -47,10 +47,12 @@ python generate_results.py             # re-create every number, chart and demo.
 The page runs the same city twice, conventional (fixed-time lights, no alerts, no ambulance priority) and ours, with the same traffic and accident, and compares them. Click a road on the right map to add an accident, click again to remove it; the real simulation re-runs.
 Team work split: see `TEAM_SPLIT.md`.
 
-A 3x3 city. Six cars each start on their cheapest route (A*). At t = 10 s an accident closes one road
-and the traffic centre broadcasts it. Click a car to see its **original route (dashed)** and, if it had to
-change, its **new route (solid)** with a one-line reason. Cars that did not use the closed road keep going.
-Traffic lights are Max-Pressure agents; cars stop behind red lights.
+A 3x3 city full of about 160 random cars (nobody tracked, no ambulances). Press **Send Car** or **Send Ambulance**:
+it gets a random start and destination and its A* route is drawn. At t = 10 s an accident closes a road and the
+traffic centre broadcasts it; a car with that road on its route re-plans (original route dashed, new route solid).
+Each junction signal is a "+": every arm is a road into the junction (green = go, red = stop, number = cars waiting).
+Straight traffic lights the two opposite arms; a turning car lights only its two arms (a "7" shape).
+Queues of orange cars build up behind red lights, and they are shorter in our city.
 
 ---
 
@@ -85,7 +87,7 @@ src/
   demo.py, demo_page.html  the re-route demo (data recorder + one-page viewer)
   visualization/charts.py  report figures
   scenarios.py             S1..S8 evaluation scenarios
-tests/                     test_unit.py (23), test_integration.py (7), test_scenarios.py (8), test_demo.py (5)
+tests/                     test_unit.py (23), test_integration.py (7), test_scenarios.py (8), test_demo.py (7)
 results/                   results.json, figures/, astar_trace.txt, protocol_trace.txt, test_report.json
 deliverables/              Report, Testing Document, Presentation
 ```
