@@ -99,8 +99,16 @@ if __name__ == "__main__":
     if a.static:
         print("Wrote", build())
         sys.exit()
-    srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
-    url = f"http://localhost:{a.port}/"
+    srv = None
+    for port in range(a.port, a.port + 20):          # an old demo window may still be using the port
+        try:
+            srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+            break
+        except OSError:
+            print(f"Port {port} is busy (an old demo is probably still running), trying the next one ...")
+    if srv is None:
+        sys.exit("No free port found. Close old demo windows and try again.")
+    url = f"http://localhost:{port}/"
     print(f"Demo running at {url}   (Ctrl+C to stop)")
     if not a.no_browser:
         webbrowser.open(url)

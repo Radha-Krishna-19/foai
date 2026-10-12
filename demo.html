@@ -30,6 +30,7 @@ code{background:#eef0f4;padding:1px 5px;border-radius:4px}
 <header><h1>Smart Traffic Management - conventional city vs ours</h1>
 <p>Same random traffic, same accident, same vehicles. Left: a city as it works today. Right: our multi-agent system.</p></header>
 <div class="wrap">
+<div id="mode" style="padding:10px 14px;border-radius:8px;margin-bottom:10px;font-size:14px"></div>
 
 <div class="card" style="font-size:14px"><b>Problem:</b> fixed-timing lights ignore real queues, drivers only learn about an accident when they reach it, and ambulances wait at red lights.
 <b>Our solution:</b> junction agents give green to the busier road (Max-Pressure), the traffic centre alerts cars so they re-plan with A*, and the ambulance requests a green corridor.</div>
@@ -129,5 +130,7 @@ cvs.forEach(cv=>{cv.onmousemove=e=>{if(!LIVE)return;hover=roadAt(e,cv);cv.style.
 $('play').onclick=e=>{playing=!playing;e.target.textContent=playing?'Pause':'Play'};
 $('rst').onclick=()=>{f=0;draw()};seek.oninput=()=>{f=+seek.value;draw()};
 function tick(ts){if(playing&&ts-last>150){last=ts;if(f<D.frames-1){f++;draw()}else{playing=false;$('play').textContent='Play'}}requestAnimationFrame(tick)}
+$('mode').innerHTML=LIVE?'<b>LIVE MODE (v5)</b> - Send Car / Send Ambulance and accident clicking work. Every press re-runs the real simulation (1-2 s).':'<b>EXAMPLE ONLY - the buttons are switched off because this page was opened as a plain file.</b> To use them: close this tab, double-click <code>START_DEMO.bat</code> (or run <code>python run_demo.py</code>) and use the page that opens at <code>http://localhost:8000</code>. The routes you see here are a fixed example.';
+$('mode').style.background=LIVE?'#e2f4ea':'#fdecec';$('mode').style.color=LIVE?'#16794a':'#b02a2a';
 apply(D,false);requestAnimationFrame(tick);
 </script></body></html>
