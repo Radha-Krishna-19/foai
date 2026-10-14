@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STMS - Smart Traffic Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
+<style>
+:root{
+  --paper:#f4f5f2; --panel:#ffffff; --ink:#1c2127; --muted:#5f6873; --line:#d9ddd6;
+  --blue:#2f6fde; --red:#d64040; --green:#23a55a; --amber:#e2a21b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font:15px/1.45 Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding:18px 20px 40px}
+header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)}
+header h1{margin:0;font:600 26px/1 "Barlow Semi Condensed",Barlow,sans-serif;letter-spacing:.5px}
+header .sub{color:var(--muted)}
+#engine{margin-left:auto;font-size:13px;color:var(--muted)}
+#engine b{font-weight:600;color:var(--ink)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 6px}
+button,select{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:7px 14px;cursor:pointer}
+button:hover:not(:disabled){border-color:#9aa3ad}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+button.car{border-color:var(--blue);color:var(--blue);font-weight:600}
+button.amb{border-color:var(--red);color:var(--red);font-weight:600}
+.sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+#seek{flex:1;min-width:160px;accent-color:var(--ink)}
+#clock{min-width:52px;text-align:right;font-weight:600}
+.hint{font-size:13px;color:var(--muted);margin-bottom:12px;min-height:19px}
+.hint .err{color:var(--red)}
+.maps{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.city{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 12px 10px}
+.city h2{margin:0;font:600 17px/1.2 "Barlow Semi Condensed",Barlow,sans-serif}
+.city .what{font-size:13px;color:var(--muted);margin:2px 0 8px}
+canvas{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:4px;background:#e4e7e1}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.kpi span{display:block;font-size:12px;color:var(--muted)}
+.kpi b{font:600 20px/1.2 "Barlow Semi Condensed",Barlow,sans-serif}
+.kpi b small{font-size:13px;font-weight:500;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+section h3{margin:0 0 2px;font:600 16px/1.2 "Barlow Semi Condensed",Barlow,sans-serif}
+section .role{font-size:13px;color:var(--muted);margin-bottom:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 6px;border-bottom:1px solid #eceee9;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--muted);font-size:13px}
+td.better{color:var(--green);font-weight:600}
+td.worse{color:var(--red)}
+#log{font-size:13px;max-height:286px;overflow:auto}
+#log div{display:grid;grid-template-columns:42px 1fr;gap:8px;padding:4px 0;border-bottom:1px solid #f0f1ee}
+#log .t{color:var(--muted)}
+#log .act{font-weight:600}
+#log .empty{display:block;color:var(--muted);border:0}
+.logopt{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.algo p{margin:0 0 8px;font-size:14px}
+.algo .big{font:600 22px/1.2 "Barlow Semi Condensed",Barlow,sans-serif}
+.algo .muted{color:var(--muted);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;vertical-align:-1px;margin-right:6px}
+.legend svg{vertical-align:-4px;margin-right:6px}
+@media (max-width:900px){.maps,.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}#engine{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>STMS</h1>
+  <span class="sub">Smart Traffic Management System: the same traffic in two cities, fixed-time signals against our multi-agent system.</span>
+  <span id="engine">Starting simulation engine</span>
+</header>
+
+<div class="bar">
+  <button class="car" id="bCar" disabled>Send car</button>
+  <button class="amb" id="bAmb" disabled>Send ambulance</button>
+  <button id="bOpen" disabled>Reopen all roads</button>
+  <button id="bNew" disabled>New traffic</button>
+  <span class="sep"></span>
+  <button id="bPlay" aria-label="Play or pause">Pause</button>
+  <input id="seek" type="range" min="0" value="0" aria-label="Simulation time">
+  <span id="clock">0 s</span>
+  <select id="speed" aria-label="Playback speed"><option value="1">1x</option><option value="2" selected>2x</option><option value="4">4x</option></select>
+</div>
+<div class="hint" id="hint">Click a road on either map to close it with an accident. Click a closed road to reopen it.</div>
+
+<div class="maps">
+  <div class="city">
+    <h2>Fixed-time city</h2>
+    <div class="what">Lights change every 20 s. No traffic centre. The ambulance waits at red lights.</div>
+    <canvas id="c0" width="620" height="620"></canvas>
+    <div class="kpis" id="k0"></div>
+  </div>
+  <div class="city">
+    <h2>STMS city</h2>
+    <div class="what">Max-Pressure lights, accident alerts with A* re-routing, green corridor for the ambulance.</div>
+    <canvas id="c1" width="620" height="620"></canvas>
+    <div class="kpis" id="k1"></div>
+  </div>
+</div>
+<div class="legend">
+  <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="7" y="0" width="4" height="7" fill="#d64040"/><rect x="7" y="11" width="4" height="7" fill="#d64040"/><rect x="0" y="7" width="7" height="4" fill="#23a55a"/><rect x="11" y="7" width="7" height="4" fill="#23a55a"/></svg>Signal: each arm is one road into the junction</span>
+  <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="0" y="7" width="7" height="4" fill="#23a55a"/><rect x="7" y="11" width="4" height="7" fill="#23a55a"/><rect x="7" y="0" width="4" height="7" fill="#d64040"/><rect x="11" y="7" width="7" height="4" fill="#d64040"/></svg>Turning traffic lights only its two arms</span>
+  <span><i style="width:12px;height:7px;border-radius:2px;background:#c5ccd5;outline:1px solid #9aa3ad"></i>Moving</span>
+  <span><i style="width:12px;height:7px;border-radius:2px;background:#f08a3c"></i>Stopped in a queue</span>
+  <span><i style="width:12px;height:7px;border-radius:2px;background:#2f6fde"></i>Your car</span>
+  <span><i style="width:12px;height:7px;border-radius:2px;background:#fff;outline:2px solid #d64040"></i>Ambulance</span>
+  <span><i style="width:18px;height:8px;background:repeating-linear-gradient(45deg,#d64040 0 3px,#fff 3px 6px)"></i>Closed road</span>
+</div>
+
+<div class="grid2">
+  <section>
+    <h3>Result of the whole run</h3>
+    <div class="role">Both cities get exactly the same vehicles and accidents.</div>
+    <table id="res"></table>
+  </section>
+  <section>
+    <h3>Agent messages in the STMS city</h3>
+    <label class="logopt"><input type="checkbox" id="gw"> Include green-wave hand-offs between junctions</label>
+    <div id="log"></div>
+  </section>
+</div>
+
+<div class="grid3">
+  <section class="algo">
+    <h3>A* route search</h3>
+    <div class="role">Vehicle agents</div>
+    <div id="aStar"></div>
+  </section>
+  <section class="algo">
+    <h3>Max-Pressure signal control</h3>
+    <div class="role">Junction agents</div>
+    <div id="aMP"></div>
+  </section>
+  <section class="algo">
+    <h3>Hill-climbing tuning</h3>
+    <div class="role">Traffic centre agent</div>
+    <div id="aHC"></div>
+  </section>
+</div>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script type="application/json" id="py">__PY__</script>
+<script type="application/json" id="hc">__HC__</script>
+<script>
+"use strict";
+const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/";
+const $ = id => document.getElementById(id);
+const read = id => JSON.parse($(id).textContent);
+let D = read("data");
+const HC = read("hc");
+const COL = {Car: "#2f6fde", Ambulance: "#d64040"};
+const SIG = {G: "#23a55a", R: "#d64040", Y: "#e2a21b"};
+const RUNS = ["conv", "ours"];
+const cvs = [$("c0"), $("c1")];
+const ctx = cvs.map(c => c.getContext("2d"));
+const L = 620;                       // logical canvas size
+const RW = 26;                       // road width in px (two lanes)
+let S, x0, y0;
+let f = 0, playing = true, lastTick = 0, busy = false, hover = null, hoverJ = "INT_11";
+const state = {closed: D.incident.roads.map(r => r.slice()), disp: D.cars.map(c => ({name: c.name, o: c.from, d: c.to, t: c.t})), seed: D.seed};
+
+/* ---------- geometry ---------- */
+function fitCanvas() {
+  const r = window.devicePixelRatio || 1;
+  cvs.forEach((c, i) => { c.width = L * r; c.height = L * r; ctx[i].setTransform(r, 0, 0, r, 0, 0); });
+}
+const X = x => (x - x0) * S, Y = y => L - (y - y0) * S, P = n => [X(D.nodes[n][0]), Y(D.nodes[n][1])];
+const J = n => n.startsWith("INT_") ? "J" + n.slice(4) : n;
+const key = (a, b) => [a, b].sort().join("|");
+const isClosed = (a, b) => state.closed.some(([x, y]) => key(x, y) === key(a, b));
+function setGeometry() {
+  const xs = Object.values(D.nodes).map(p => p[0]), ys = Object.values(D.nodes).map(p => p[1]), pad = 22;
+  x0 = Math.min(...xs) - pad; y0 = Math.min(...ys) - pad;
+  S = Math.min(L / (Math.max(...xs) + pad - x0), L / (Math.max(...ys) + pad - y0));
+}
+function undirectedRoads() {
+  const seen = new Set(), out = [];
+  D.roads.forEach(([a, b]) => { const k = key(a, b); if (!seen.has(k)) { seen.add(k); out.push([a, b]); } });
+  return out;
+}
+const innerRoads = () => undirectedRoads().filter(([a, b]) => a.startsWith("INT") && b.startsWith("INT"));
+
+/* ---------- drawing ---------- */
+function drawRoads(g) {
+  const roads = undirectedRoads();
+  g.lineCap = "butt"; g.strokeStyle = "#3d434b"; g.lineWidth = RW;
+  roads.forEach(([a, b]) => { const [p, q] = P(a), [r, s] = P(b); g.beginPath(); g.moveTo(p, q); g.lineTo(r, s); g.stroke(); });
+  D.signals.forEach(n => { const [p, q] = P(n); g.fillStyle = "#3d434b"; g.fillRect(p - RW / 2, q - RW / 2, RW, RW); });
+  g.strokeStyle = "#8b929b"; g.lineWidth = 1; g.setLineDash([6, 6]);
+  roads.forEach(([a, b]) => {
+    let [p, q] = P(a), [r, s] = P(b); const dx = Math.sign(r - p), dy = Math.sign(s - q);
+    if (a.startsWith("INT")) { p += dx * RW / 2; q += dy * RW / 2; }
+    if (b.startsWith("INT")) { r -= dx * RW / 2; s -= dy * RW / 2; }
+    g.beginPath(); g.moveTo(p, q); g.lineTo(r, s); g.stroke();
+  });
+  g.setLineDash([]);
+}
+function roadBox(a, b) {
+  let [p, q] = P(a), [r, s] = P(b); const dx = Math.sign(r - p), dy = Math.sign(s - q);
+  p += dx * RW / 2; q += dy * RW / 2; r -= dx * RW / 2; s -= dy * RW / 2;
+  return [Math.min(p, r) - (dy ? RW / 2 : 0), Math.min(q, s) - (dx ? RW / 2 : 0), Math.abs(r - p) + (dy ? RW : 0), Math.abs(s - q) + (dx ? RW : 0)];
+}
+function hatch(g, a, b) {
+  const [x, y, w, h] = roadBox(a, b);
+  g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+  g.fillStyle = "#ffffff"; g.fillRect(x, y, w, h); g.strokeStyle = "#d64040"; g.lineWidth = 4;
+  for (let k = -h; k < w + h; k += 9) { g.beginPath(); g.moveTo(x + k, y); g.lineTo(x + k + h, y + h); g.stroke(); }
+  g.restore();
+}
+function routePath(run, c, t) {
+  let r = c.original;
+  run.events.forEach(e => { if (e.car === c.name && e.t <= t) r = e.new; });
+  return r;
+}
+function polyline(g, path, colour, width, dash) {
+  g.save(); g.strokeStyle = colour; g.lineWidth = width; g.setLineDash(dash || []); g.lineJoin = "round"; g.lineCap = "round";
+  g.beginPath(); path.forEach((n, i) => { const [p, q] = P(n); i ? g.lineTo(p, q) : g.moveTo(p, q); }); g.stroke(); g.restore();
+}
+function chevrons(g, path) {
+  g.fillStyle = "#ffffff";
+  for (let i = 0; i < path.length - 1; i++) {
+    const [p, q] = P(path[i]), [r, s] = P(path[i + 1]), a = Math.atan2(s - q, r - p);
+    g.save(); g.translate((p + r) / 2, (q + s) / 2); g.rotate(a);
+    g.beginPath(); g.moveTo(5, 0); g.lineTo(-4, -5); g.lineTo(-4, 5); g.closePath(); g.fill(); g.restore();
+  }
+}
+function vehicle(g, x, y, dir, len, wid, fill, stroke, lw) {
+  const h = dir % 2 === 0, w = h ? len : wid, hh = h ? wid : len;
+  g.fillStyle = fill; g.beginPath();
+  if (g.roundRect) g.roundRect(x - w / 2, y - hh / 2, w, hh, 1.5); else g.rect(x - w / 2, y - hh / 2, w, hh);
+  g.fill(); if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); }
+}
+function signal(g, id, sig, q) {
+  const [p, r] = P(id), arms = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  for (let i = 0; i < 4; i++) {
+    const [dx, dy] = arms[i];
+    g.fillStyle = SIG[sig[i]];
+    if (dx) g.fillRect(dx > 0 ? p + 2 : p - 11, r - 2, 9, 4); else g.fillRect(p - 2, dy > 0 ? r + 2 : r - 11, 4, 9);
+    if (q[i] >= 2) {
+      g.fillStyle = "#1c2127"; g.font = "600 11px Barlow, sans-serif"; g.textAlign = "center";
+      const off = RW / 2 + 9;
+      g.fillText(q[i], p + dx * off + (dy ? -16 * dy : 0), r + dy * off + 4 + (dx ? 15 * dx : 0));
+    }
+  }
+  g.fillStyle = "#1c2127"; g.fillRect(p - 2, r - 2, 4, 4);
+}
+function drawCity(i) {
+  const g = ctx[i], run = D[RUNS[i]], fr = run.frames[f], t = f + 1;
+  g.clearRect(0, 0, L, L); g.fillStyle = "#e4e7e1"; g.fillRect(0, 0, L, L);
+  drawRoads(g);
+  if (t >= D.incident.t) D.incident.roads.forEach(([a, b]) => hatch(g, a, b));
+  if (hover) { const [x, y, w, h] = roadBox(hover[0], hover[1]); g.save(); g.strokeStyle = "#2f6fde"; g.lineWidth = 3; g.setLineDash([5, 4]); g.strokeRect(x - 2, y - 2, w + 4, h + 4); g.restore(); }
+  g.fillStyle = "#5f6873"; g.font = "500 11px Barlow, sans-serif";
+  Object.keys(D.nodes).forEach(n => {
+    const [p, q] = P(n);
+    if (n.startsWith("INT")) { g.textAlign = "left"; g.fillText(J(n), p + RW / 2 + 3, q - RW / 2 - 3); }
+    else { g.textAlign = "center"; const side = q < 60 ? [20, 10] : q > L - 60 ? [20, -2] : p < 60 ? [8, -16] : [-8, -16]; g.fillText(n, p + side[0], q + side[1]); }
+  });
+  D.cars.forEach(c => {
+    const arr = run.arrived[c.name]; if (arr && t >= arr) return;
+    const cur = routePath(run, c, t);
+    if (cur !== c.original) polyline(g, c.original, "rgba(255,255,255,.8)", 2, [5, 5]);
+    polyline(g, cur, c.name === "Car" ? "rgba(96,150,255,.8)" : "rgba(255,110,110,.8)", 5);
+    chevrons(g, cur);
+    const [sx, sy] = P(cur[0]), [ex, ey] = P(c.to);
+    g.fillStyle = COL[c.name]; g.beginPath(); g.arc(sx, sy, 6, 0, 7); g.fill();
+    g.strokeStyle = COL[c.name]; g.lineWidth = 3; g.beginPath(); g.arc(ex, ey, 7, 0, 7); g.stroke();
+    g.fillStyle = "#fff"; g.beginPath(); g.arc(ex, ey, 3, 0, 7); g.fill();
+  });
+  fr.bg.forEach(([x, y, st, d]) => vehicle(g, X(x), Y(y), d, 6.4, 5, st ? "#f08a3c" : "#c5ccd5"));
+  D.signals.forEach(id => signal(g, id, fr.sig[id], fr.q[id]));
+  if (i === 1 && hoverJ) { const [p, q] = P(hoverJ); g.strokeStyle = "#1c2127"; g.lineWidth = 1.5; g.strokeRect(p - RW / 2 - 3, q - RW / 2 - 3, RW + 6, RW + 6); }
+  D.cars.forEach(c => {
+    const v = fr.cars[c.name]; if (!v) return;
+    const x = X(v[0]), y = Y(v[1]);
+    g.fillStyle = c.name === "Car" ? "rgba(47,111,222,.25)" : "rgba(214,64,64,.25)";
+    g.beginPath(); g.arc(x, y, 11, 0, 7); g.fill();
+    if (c.name === "Car") vehicle(g, x, y, v[3], 9, 6, "#2f6fde", "#ffffff", 1.5);
+    else { vehicle(g, x, y, v[3], 10, 6.5, "#ffffff", "#d64040", 2); if (!v[2] && f % 2) { g.fillStyle = "#2f6fde"; g.beginPath(); g.arc(x, y, 1.8, 0, 7); g.fill(); } }
+  });
+}
+
+/* ---------- panels ---------- */
+const fmt = x => x == null ? "not arrived" : String(Math.round(x * 10) / 10);
+function kpis(i) {
+  const run = D[RUNS[i]], fr = run.frames[f], t = f + 1, st = run.stats;
+  const trip = n => {
+    const c = D.cars.find(c => c.name === n); if (!c) return `<small>not sent</small>`;
+    const a = run.arrived[n];
+    if (a && t >= a) return `${a - c.t} <small>s</small>`;
+    if (t < c.t) return `<small>starts at ${c.t} s</small>`;
+    return `${t - c.t} <small>s so far</small>`;
+  };
+  $("k" + i).innerHTML =
+    `<div class="kpi"><span>Stopped now</span><b>${fr.wait}</b></div>` +
+    `<div class="kpi"><span>Average wait</span><b>${st.avg_wait_s} <small>s</small></b></div>` +
+    `<div class="kpi"><span>Car trip</span><b>${trip("Car")}</b></div>` +
+    `<div class="kpi"><span>Ambulance trip</span><b>${trip("Ambulance")}</b></div>`;
+}
+function results() {
+  const a = D.conv.stats, b = D.ours.stats, rows = [];
+  rows.push(["Average wait per vehicle (s)", a.avg_wait_s, b.avg_wait_s, true]);
+  rows.push(["Most vehicles stopped at once", a.max_queue, b.max_queue, true]);
+  rows.push(["Vehicles that reached their destination", a.arrived, b.arrived, false]);
+  D.cars.forEach(c => rows.push([`${c.name} trip time (s)`, a.trip[c.name], b.trip[c.name], true]));
+  if (a.ambulance_red_wait_s != null) rows.push(["Ambulance time stopped (s)", a.ambulance_red_wait_s, b.ambulance_red_wait_s, true]);
+  rows.push(["Agent messages exchanged", a.messages, b.messages, null]);
+  $("res").innerHTML = "<tr><th>Measure</th><th>Fixed-time</th><th>STMS</th><th>Change</th></tr>" + rows.map(([m, x, y, lo]) => {
+    let ch = "", cls = "";
+    if (typeof x === "number" && typeof y === "number" && lo !== null && x !== 0) {
+      const pct = Math.round(100 * (y - x) / x); ch = (pct > 0 ? "+" : "") + pct + "%";
+      cls = pct === 0 ? "" : ((pct < 0) === lo ? "better" : "worse");
+    }
+    return `<tr><td>${m}</td><td>${fmt(x)}</td><td>${fmt(y)}</td><td class="${cls}">${ch}</td></tr>`;
+  }).join("");
+}
+function messageLog() {
+  const t = f + 1, gw = $("gw").checked;
+  const rows = D.ours.messages.filter(m => m[0] <= t && (gw || !m[4].includes("cars coming"))).slice(-14).reverse();
+  $("log").innerHTML = rows.length
+    ? rows.map(m => `<div><span class="t">${m[0]} s</span><span><b>${m[1]}</b> to <b>${m[3]}</b>: <span class="act">${m[2]}</span> ${m[4]}</span></div>`).join("")
+    : `<div class="empty">No messages yet.</div>`;
+}
+function algorithms() {
+  const t = f + 1, car = D.cars.find(c => c.name === "Car") || D.cars[0];
+  if (car) {
+    const replans = D.ours.events.filter(e => e.car === car.name && e.t <= t).length;
+    const route = routePath(D.ours, car, t).map(J).join(" - ");
+    $("aStar").innerHTML = `<p class="big">${car.astar.expanded} nodes expanded</p>
+      <p>${car.name} from ${car.from} to ${car.to}. Cheapest route ${car.astar.cost} s, using f(n) = g(n) + h(n) with h = straight-line distance / top speed.</p>
+      <p class="muted">Route now: ${route}. Re-planned ${replans} time${replans === 1 ? "" : "s"} after accident alerts.</p>`;
+  } else $("aStar").innerHTML = `<p class="muted">Send a car to see its A* plan.</p>`;
+  const fr = D.ours.frames[f], [ns, ew, qns, qew, rc] = fr.p[hoverJ], sig = fr.sig[hoverJ];
+  const green = sig.includes("Y") ? "changing (yellow)" : (sig[0] === "G" || sig[2] === "G") ? "north-south green" : "east-west green";
+  $("aMP").innerHTML = `<p class="big">${J(hoverJ)}: ${green}</p>
+    <table><tr><th></th><th>North-south</th><th>East-west</th></tr>
+    <tr><td>Cars waiting</td><td>${qns}</td><td>${qew}</td></tr>
+    <tr><td>Score</td><td>${ns}</td><td>${ew}</td></tr></table>
+    <p style="margin-top:8px">Decision: ${D.reasons[rc]}.</p>
+    <p class="muted">Score = waiting cars minus cars queued on the exit roads, plus ${D.tuned.starvation_weight} for every second a side has been red. Point at a junction on the STMS map to inspect it.</p>`;
+  const lbl = {min_green_time: "Minimum green (s)", max_green_time: "Maximum green (s)", starvation_weight: "Starvation weight", switch_threshold: "Switch threshold"};
+  $("aHC").innerHTML = `<table><tr><th>Parameter</th><th>Default</th><th>Tuned</th></tr>${Object.keys(lbl).map(k => `<tr><td>${lbl[k]}</td><td>${HC.default[k]}</td><td>${HC.tuned[k]}</td></tr>`).join("")}</table>
+    <p class="muted" style="margin-top:8px">${HC.evaluations} evaluations with random restarts. Average wait on unseen traffic went from ${HC.val_default} s to ${HC.val_tuned} s. The traffic centre sends these values to every junction at 1 s.</p>`;
+}
+function draw() {
+  drawCity(0); drawCity(1); kpis(0); kpis(1); messageLog(); algorithms();
+  $("seek").value = f; $("clock").textContent = (f + 1) + " s";
+}
+function apply(d, keep) {
+  D = d; setGeometry(); $("seek").max = D.frames - 1;
+  f = keep ? Math.min(f, D.frames - 1) : 0;
+  results(); draw();
+}
+
+/* ---------- engine: local Python server if present, otherwise Python in the browser (Pyodide) ---------- */
+const engine = {kind: null, worker: null, pending: null, label: ""};
+function setEngine(label) {
+  if (label) engine.label = label;
+  $("engine").innerHTML = engine.label;
+  ["bCar", "bAmb", "bOpen", "bNew"].forEach(id => $(id).disabled = !engine.kind || busy);
+}
+function workerSource() {
+  return `importScripts("${PYODIDE}pyodide.js");
+let py, fn;
+onmessage = async e => {
+  const m = e.data;
+  try {
+    if (m.files) {
+      py = await loadPyodide({indexURL: "${PYODIDE}"});
+      for (const [p, src] of Object.entries(m.files)) {
+        py.FS.mkdirTree("/stms_app/" + p.split("/").slice(0, -1).join("/"));
+        py.FS.writeFile("/stms_app/" + p, src);
+      }
+      py.runPython("import sys\\nsys.path.insert(0, '/stms_app')\\nfrom stms.demo import record_json");
+      fn = py.globals.get("record_json");
+      postMessage({ready: true});
+    } else {
+      postMessage({json: fn(m.closed, m.disp, m.seed)});
+    }
+  } catch (err) { postMessage({error: String(err)}); }
+};`;
+}
+async function startEngine() {
+  if (location.protocol.startsWith("http")) {
+    try {
+      const r = await fetch("api/ping", {cache: "no-store"});
+      if (r.ok) { engine.kind = "server"; setEngine("Engine: <b>local Python</b>"); return; }
+    } catch (e) { /* no local server: fall back to the browser engine */ }
+  }
+  setEngine("Loading the Python engine in your browser (about 10 s the first time)");
+  try {
+    engine.worker = new Worker(URL.createObjectURL(new Blob([workerSource()], {type: "text/javascript"})));
+    engine.worker.onmessage = e => {
+      const m = e.data;
+      if (m.ready) { engine.kind = "browser"; setEngine("Engine: <b>Python in your browser</b>"); return; }
+      if (m.error && !engine.kind) { setEngine(`<span style="color:#d64040">Engine failed to start. Check the internet connection or run python run_demo.py.</span>`); return; }
+      const cb = engine.pending; engine.pending = null; if (cb) cb(m);
+    };
+    engine.worker.postMessage({files: read("py")});
+  } catch (e) { setEngine(`<span style="color:#d64040">Engine failed to start. Run python run_demo.py.</span>`); }
+}
+function simulate() {
+  const closed = state.closed.map(r => r.join("-")).join(","), disp = state.disp.map(d => [d.name, d.o, d.d, d.t].join(":")).join(";");
+  if (engine.kind === "server")
+    return fetch(`api/run?closed=${encodeURIComponent(closed)}&disp=${encodeURIComponent(disp)}&seed=${state.seed}`)
+      .then(r => { if (!r.ok) throw new Error("the local server returned an error"); return r.json(); });
+  return new Promise((ok, fail) => {
+    engine.pending = m => m.error ? fail(new Error(m.error)) : ok(JSON.parse(m.json));
+    engine.worker.postMessage({closed, disp, seed: state.seed});
+  });
+}
+function rerun(note, keep) {
+  if (!engine.kind || busy) return Promise.resolve();
+  busy = true; setEngine(); $("hint").textContent = "Simulating both cities";
+  return simulate()
+    .then(d => { busy = false; apply(d, keep); $("hint").textContent = note; setEngine(); })
+    .catch(e => { busy = false; setEngine(); $("hint").innerHTML = `<span class="err">Simulation failed: ${e.message}</span>`; });
+}
+
+/* ---------- user actions ---------- */
+function randomTrip() {
+  const ends = Object.keys(D.nodes).filter(n => !n.startsWith("INT"));
+  let o, d;
+  do { o = ends[Math.floor(Math.random() * ends.length)]; d = ends[Math.floor(Math.random() * ends.length)]; } while (o[0] === d[0]);
+  return [o, d];
+}
+function send(name) {
+  let t = f + 2;
+  if (t > D.frames - 90) { f = 0; t = 3; }
+  const [o, d] = randomTrip();
+  state.disp = state.disp.filter(x => x.name !== name).concat([{name, o, d, t}]);
+  playing = true; $("bPlay").textContent = "Pause";
+  rerun(`${name} sent from ${o} to ${d} at ${t} s. Its A* route is drawn on both maps.`, true);
+}
+function toggleRoad(a, b) {
+  const was = isClosed(a, b);
+  state.closed = was ? state.closed.filter(([x, y]) => key(x, y) !== key(a, b)) : state.closed.concat([[a, b]]);
+  rerun(`Road ${J(a)}-${J(b)} ${was ? "reopened" : "closed from " + D.incident.t + " s"}.`, true);
+}
+$("bCar").onclick = () => send("Car");
+$("bAmb").onclick = () => send("Ambulance");
+$("bOpen").onclick = () => { state.closed = []; rerun("All roads are open.", true); };
+$("bNew").onclick = () => { state.seed = Math.floor(Math.random() * 1e6); state.disp = []; rerun("New random traffic. Send a car or an ambulance.", false); };
+$("bPlay").onclick = () => { playing = !playing; $("bPlay").textContent = playing ? "Pause" : "Play"; };
+$("seek").oninput = () => { f = +$("seek").value; draw(); };
+$("gw").onchange = messageLog;
+
+function canvasPoint(ev, c) { const r = c.getBoundingClientRect(); return [(ev.clientX - r.left) * L / r.width, (ev.clientY - r.top) * L / r.height]; }
+function roadAt(mx, my) {
+  let best = null, bd = RW / 2 + 4;
+  innerRoads().forEach(([a, b]) => {
+    const [p, q] = P(a), [x, y] = P(b), dx = x - p, dy = y - q;
+    const u = Math.max(0, Math.min(1, ((mx - p) * dx + (my - q) * dy) / (dx * dx + dy * dy)));
+    const d = Math.hypot(mx - (p + u * dx), my - (q + u * dy));
+    if (d < bd && u > .1 && u < .9) { bd = d; best = [a, b]; }
+  });
+  return best;
+}
+function junctionAt(mx, my) { return D.signals.find(n => { const [p, q] = P(n); return Math.abs(mx - p) < RW && Math.abs(my - q) < RW; }); }
+cvs.forEach(c => {
+  c.addEventListener("mousemove", ev => {
+    const [mx, my] = canvasPoint(ev, c), j = junctionAt(mx, my);
+    hover = engine.kind && !busy ? roadAt(mx, my) : null;
+    if (j) hoverJ = j;
+    c.style.cursor = hover ? "pointer" : "default"; draw();
+  });
+  c.addEventListener("mouseleave", () => { hover = null; draw(); });
+  c.addEventListener("click", ev => {
+    if (!engine.kind || busy) return;
+    const [mx, my] = canvasPoint(ev, c), r = roadAt(mx, my);
+    if (r) toggleRoad(r[0], r[1]);
+  });
+});
+
+function tick(ts) {
+  if (playing && !busy && ts - lastTick > 260 / +$("speed").value) {
+    lastTick = ts;
+    if (f < D.frames - 1) { f++; draw(); } else { playing = false; $("bPlay").textContent = "Play"; }
+  }
+  requestAnimationFrame(tick);
+}
+fitCanvas(); apply(D, false); requestAnimationFrame(tick); startEngine();
+window.addEventListener("resize", () => { fitCanvas(); draw(); });
+</script>
+</body>
+</html>

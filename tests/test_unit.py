@@ -11,13 +11,13 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.environment.road_network import RoadNetwork, RoadSegment
-from src.environment.traffic_grid import build_grid_network
-from src.algorithms.search_astar import AStarRouter
-from src.algorithms.max_pressure import MaxPressureController, SignalPhase
-from src.algorithms.hill_climbing import ParameterSpace, hill_climb
-from src.protocols.message import ACLMessage, MessageBroker, Performative
-from src.scenarios import congested_grid, make_sim
+from stms.environment.road_network import RoadNetwork, RoadSegment
+from stms.environment.traffic_grid import build_grid_network
+from stms.algorithms.search_astar import AStarRouter
+from stms.algorithms.max_pressure import MaxPressureController, SignalPhase
+from stms.algorithms.hill_climbing import ParameterSpace, hill_climb
+from stms.protocols.message import ACLMessage, MessageBroker, Performative
+from stms.scenarios import congested_grid, make_sim
 from tests._record import record
 
 

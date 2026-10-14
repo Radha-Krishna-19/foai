@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.demo import record as record_demo, INCIDENT_ROAD, DEFAULT_CLOSED
+from stms.demo import record as record_demo, INCIDENT_ROAD, DEFAULT_CLOSED
 from tests._record import record
 
 CLOSED = {INCIDENT_ROAD, INCIDENT_ROAD[::-1]}
@@ -36,10 +36,10 @@ class TestDemoScenario(unittest.TestCase):
 
     def test_DM02_unaffected_car_keeps_route_and_dispatch_is_random_free(self):
         """DM-02: a dispatched car whose route avoids the closed road is never re-routed; no accident -> no re-route"""
-        d = record_demo([], [("Car 1", "W1", "E1", 15)])
+        d = record_demo([], [("Car", "W1", "E1", 15)])
         self.assertFalse(d["ours"]["events"])
         self.assertFalse(uses_closed(d["cars"][0]["original"]))
-        record("DM-02", "no accident -> Car 1 keeps its A* route, 0 re-routes")
+        record("DM-02", "no accident -> the car keeps its A* route, 0 re-routes")
 
     def test_DM03_all_tracked_cars_arrive(self):
         """DM-03: the dispatched car and ambulance reach their destination despite the accident"""
@@ -70,6 +70,28 @@ class TestDemoScenario(unittest.TestCase):
         self.assertGreater(c["max_queue"], 20)
         self.assertLess(o["max_queue"], c["max_queue"])
         record("DM-07", f"{c['spawned']} random cars; most stopped at once {c['max_queue']} (conv) vs {o['max_queue']} (ours)")
+
+    def test_DM08_hill_climbing_parameters_reach_junctions(self):
+        """DM-08: the traffic centre sends the hill-climbing parameters to every junction (INFORM PARAMETER_UPDATE)"""
+        from stms.demo import build, TUNED_PARAMS
+        sim, _, _ = build("ours", [], [])
+        sim.run(3)
+        for ag in sim.intersections.values():
+            self.assertEqual(ag.controller.min_green_time, TUNED_PARAMS["min_green_time"])
+            self.assertEqual(ag.controller.max_green_time, TUNED_PARAMS["max_green_time"])
+        upd = [m for m in self.d["ours"]["messages"] if "tuned timing" in m[4]]
+        self.assertEqual(len(upd), 9)
+        record("DM-08", "9 junctions received PARAMETER_UPDATE at t = 1 s and use min green 3 s, max green 15 s")
+
+    def test_DM09_web_entry_point(self):
+        """DM-09: the browser/server entry point parses the page's query strings and returns valid JSON"""
+        import json
+        from stms.demo import record_json
+        d = json.loads(record_json("INT_10-INT_11", "Car:W1:E1:20;Ambulance:S0:N2:30", 7))
+        self.assertEqual(d["incident"]["roads"], [["INT_10", "INT_11"]])
+        self.assertEqual([c["name"] for c in d["cars"]], ["Car", "Ambulance"])
+        self.assertEqual(d["ours"]["stats"]["spawned"], d["conv"]["stats"]["spawned"])
+        record("DM-09", "record_json round trip: 1 closed road, car + ambulance dispatched, identical traffic")
 
     def test_DM05_same_traffic_both_runs(self):
         """DM-05: both runs use identical traffic and the same accident, so the comparison is fair"""

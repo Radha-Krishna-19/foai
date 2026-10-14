@@ -9,7 +9,7 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src import scenarios as S
+from stms import scenarios as S
 from tests._record import record
 
 

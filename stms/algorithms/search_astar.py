@@ -33,7 +33,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 import heapq
 import itertools
 
-from src.environment.road_network import RoadNetwork, RoadSegment
+from stms.environment.road_network import RoadNetwork, RoadSegment
 
 
 @dataclass

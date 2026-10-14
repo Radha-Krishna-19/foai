@@ -213,29 +213,29 @@
  "S5": {
   "rows": {
    "Conventional": {
-    "ambulance_trip_s": 91.0,
-    "ambulance_red_wait_s": 16.0,
-    "avg_wait_s": 24.79,
-    "arrived_pct": 87.29,
+    "ambulance_trip_s": 119.0,
+    "ambulance_red_wait_s": 48.0,
+    "avg_wait_s": 24.31,
+    "arrived_pct": 91.84,
     "ambulance_trip_list": [
-     91.0,
-     91.0,
-     91.0,
-     91.0,
-     91.0
+     119.0,
+     119.0,
+     119.0,
+     119.0,
+     119.0
     ]
    },
    "Ours (STMS)": {
-    "ambulance_trip_s": 73.0,
+    "ambulance_trip_s": 64.0,
     "ambulance_red_wait_s": 0.0,
-    "avg_wait_s": 17.62,
-    "arrived_pct": 93.47,
+    "avg_wait_s": 16.74,
+    "arrived_pct": 97.92,
     "ambulance_trip_list": [
-     73.0,
-     73.0,
-     73.0,
-     73.0,
-     73.0
+     64.0,
+     64.0,
+     64.0,
+     64.0,
+     64.0
     ]
    }
   },
@@ -247,8 +247,8 @@
    5
   ],
   "accident": "J01-J11 closed at t = 10 s",
-  "ambulance_trip_saved_pct": 19.8,
-  "avg_wait_saved_pct": 28.9
+  "ambulance_trip_saved_pct": 46.2,
+  "avg_wait_saved_pct": 31.1
  },
  "S6": {
   "default_params": {
@@ -276,7 +276,7 @@
   "val_tuned_wait_s": 6.96,
   "val_fixed_time_wait_s": 17.02,
   "evaluations": 62,
-  "runtime_s": 16.5,
+  "runtime_s": 16.2,
   "trace": [
    {
     "restart": 0,
@@ -446,7 +446,7 @@
     "optimal_pct": 56.5,
     "avg_extra_cost_pct": 0.67,
     "worst_extra_cost_pct": 3.9,
-    "ms_per_search": 0.136
+    "ms_per_search": 0.081
    },
    "UCS (Dijkstra)": {
     "avg_nodes_expanded": 36.0,
@@ -454,7 +454,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.556
+    "ms_per_search": 0.471
    },
    "Greedy Best-First": {
     "avg_nodes_expanded": 7.7,
@@ -462,7 +462,7 @@
     "optimal_pct": 51.5,
     "avg_extra_cost_pct": 0.7,
     "worst_extra_cost_pct": 4.0,
-    "ms_per_search": 0.226
+    "ms_per_search": 0.176
    },
    "A* (Euclidean h)": {
     "avg_nodes_expanded": 14.1,
@@ -470,7 +470,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.392
+    "ms_per_search": 0.284
    },
    "A* (Manhattan h)": {
     "avg_nodes_expanded": 11.3,
@@ -478,7 +478,7 @@
     "optimal_pct": 100.0,
     "avg_extra_cost_pct": 0.0,
     "worst_extra_cost_pct": 0.0,
-    "ms_per_search": 0.248
+    "ms_per_search": 0.252
    },
    "Weighted A* (w=2)": {
     "avg_nodes_expanded": 8.0,
@@ -486,7 +486,7 @@
     "optimal_pct": 57.0,
     "avg_extra_cost_pct": 0.51,
     "worst_extra_cost_pct": 4.0,
-    "ms_per_search": 0.22
+    "ms_per_search": 0.3
    }
   }
  },
@@ -500,7 +500,7 @@
     "mp_avg_wait_s": 7.7,
     "wait_reduction_pct": 45.4,
     "messages": 24,
-    "ms_per_tick": 0.18,
+    "ms_per_tick": 0.25,
     "arrived_pct": 100.0
    },
    "3x3": {
@@ -511,7 +511,7 @@
     "mp_avg_wait_s": 11.49,
     "wait_reduction_pct": 44.5,
     "messages": 68,
-    "ms_per_tick": 0.53,
+    "ms_per_tick": 0.48,
     "arrived_pct": 100.0
    },
    "4x4": {
@@ -522,7 +522,7 @@
     "mp_avg_wait_s": 14.81,
     "wait_reduction_pct": 42.4,
     "messages": 133,
-    "ms_per_tick": 0.59,
+    "ms_per_tick": 0.71,
     "arrived_pct": 100.0
    },
    "5x5": {
@@ -533,7 +533,7 @@
     "mp_avg_wait_s": 19.88,
     "wait_reduction_pct": 44.4,
     "messages": 220,
-    "ms_per_tick": 1.18,
+    "ms_per_tick": 0.78,
     "arrived_pct": 100.0
    },
    "6x6": {
@@ -544,7 +544,7 @@
     "mp_avg_wait_s": 24.85,
     "wait_reduction_pct": 44.3,
     "messages": 345,
-    "ms_per_tick": 1.18,
+    "ms_per_tick": 1.11,
     "arrived_pct": 100.0
    },
    "8x8": {
@@ -555,7 +555,7 @@
     "mp_avg_wait_s": 30.3,
     "wait_reduction_pct": 46.6,
     "messages": 593,
-    "ms_per_tick": 2.39,
+    "ms_per_tick": 1.49,
     "arrived_pct": 100.0
    }
   }

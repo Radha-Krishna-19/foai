@@ -3,12 +3,12 @@ Runs every evaluation scenario and regenerates all evidence used in the report a
 
     results/results.json           all numbers (single source of truth)
     results/figures/*.png          charts
-    demo.html                      the one-page demo (re-routing)
+    index.html                     the website (demo)
     results/astar_trace.txt        step-by-step A* trace
     results/protocol_trace.txt     FIPA-ACL message log of the demo run
 
-Usage:   python generate_results.py            (full, ~1 minute)
-         python generate_results.py --fast     (fewer seeds, for a quick check)
+Usage:   python scripts/generate_results.py            (full, ~1 minute)
+         python scripts/generate_results.py --fast     (fewer seeds, for a quick check)
 """
 
 import argparse
@@ -18,13 +18,14 @@ import random
 import sys
 import time
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, ROOT)
 
-from src import scenarios as S
-from src.visualization.charts import make_all_charts
-from src.visualization.diagrams import make_diagrams
+from stms import scenarios as S
+from stms.visualization.charts import make_all_charts
+from stms.visualization.diagrams import make_diagrams
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
+OUT = os.path.join(ROOT, "results")
 
 
 def demo_sim():
@@ -86,9 +87,8 @@ def main():
     for p in make_all_charts(R, os.path.join(OUT, "figures")):
         print("  ", os.path.relpath(p))
     make_diagrams(os.path.join(OUT, "figures"))
-    import run_demo
-    run_demo.build()
-    print("demo.html rebuilt")
+    from stms.site import write_site
+    print("website rebuilt:", write_site())
     print(f"Done in {time.time() - t0:.0f} s. Results in {OUT}")
 
 

@@ -31,7 +31,7 @@ def architecture(path):
     _box(ax, 0.2, 2.5, 3.2, 1.9, "Ambulance agent - M4", "asks junctions for a green corridor\n(PREEMPT_OVERRIDE), then CANCEL\n(extends the Vehicle agent)", ORANGE)
     _box(ax, 4.4, 2.5, 3.2, 1.9, "Intersection agents - M2", "Max-Pressure + anti-starvation\nFixed-time baseline\ngreen-wave INFORM to neighbours", BLUE)
     _box(ax, 8.8, 2.5, 3.0, 1.9, "Vehicle agents - M3", "A* on own beliefs\nre-plan on alerts\ncar-following, headway", GREEN)
-    _box(ax, 0.2, 0.2, 11.6, 1.3, "Environment & simulator - M1", "road graph (NetworkX)  |  BPR travel time  |  saturation flow 1800 veh/h  |  1 s ticks  |  Poisson demand  |  demo page", GREY)
+    _box(ax, 0.2, 0.2, 11.6, 1.3, "Environment & simulator - M1", "road graph G = (V, E)  |  BPR travel time  |  saturation flow 1800 veh/h  |  1 s ticks  |  Poisson demand", GREY)
     _arrow(ax, (4.2, 6.0), (1.8, 4.4), PURPLE, "BROADCAST (same alerts)", 2.2, 5.3)
     _arrow(ax, (6.0, 5.1), (6.0, 4.4), PURPLE, "INFORM\nPARAMETER_UPDATE", 6.0, 4.75)
     _arrow(ax, (7.8, 6.0), (10.3, 4.4), PURPLE, "BROADCAST INCIDENT_ALERT\nINFORM CONGESTION_WARNING", 9.9, 5.4)
@@ -43,13 +43,13 @@ def architecture(path):
 
 
 def sequence(path):
-    lanes = ["Traffic centre", "Car 1", "Ambulance", "Junction J20", "Junction J10", "Junction J00"]
+    lanes = ["Traffic centre", "Car", "Ambulance", "Junction J20", "Junction J10", "Junction J00"]
     cols = [PURPLE, GREEN, "#dc2626", BLUE, BLUE, BLUE]
     xs = [1, 2.9, 4.8, 6.7, 8.6, 10.5]
     R = "#dc2626"
     # real messages of the demo run (python run_simulation.py --protocol shows the same log)
     msgs = [(10, 0, 1, "BROADCAST alert", PURPLE),
-            (10, 1, 1, "Car 1: closed road on my route -> A* again", GREEN),
+            (10, 1, 1, "Car: closed road on my route -> A* again", GREEN),
             (14, 2, 3, "PREEMPT_OVERRIDE (NS, ETA 12 s)", R),
             (15, 3, 2, "AGREE", BLUE),
             (25, 2, 4, "PREEMPT_OVERRIDE (NS, ETA 14.9 s)", R),

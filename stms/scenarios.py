@@ -19,11 +19,11 @@ import statistics as st
 import time
 from typing import Any, Dict, List, Optional
 
-from src.protocols.message import MessageBroker, Performative
-from src.environment.traffic_grid import build_grid_network
-from src.environment.simulator import TrafficSimulator
-from src.algorithms.search_astar import AStarRouter
-from src.agents.intersection_agent import DEFAULT_PARAMS
+from stms.protocols.message import MessageBroker, Performative
+from stms.environment.traffic_grid import build_grid_network
+from stms.environment.simulator import TrafficSimulator
+from stms.algorithms.search_astar import AStarRouter
+from stms.agents.intersection_agent import DEFAULT_PARAMS
 
 OD_2x2 = [("N0", "S0"), ("N1", "S1"), ("W0", "E0"), ("W1", "E1"), ("S0", "N0"), ("S1", "N1"),
           ("E0", "W0"), ("E1", "W1"), ("N0", "E1"), ("W0", "S1"), ("S1", "W0"), ("E0", "S0")]
@@ -40,10 +40,10 @@ def _std(xs):
 
 
 def make_sim(rows=2, cols=2, mode="MAX_PRESSURE", reroute_policy="broadcast", controller_params=None,
-             green_wave=True, record_positions=False, **router_kw):
+             green_wave=True, record_positions=False, grid_kw=None, **router_kw):
     broker = MessageBroker()
     net, agents = build_grid_network(broker, rows, cols, mode=mode, controller_params=controller_params,
-                                     green_wave=green_wave)
+                                     green_wave=green_wave, **(grid_kw or {}))
     router = AStarRouter(net, **router_kw)
     return TrafficSimulator(net, agents, broker, router=router, reroute_policy=reroute_policy,
                             record_positions=record_positions)
@@ -200,7 +200,7 @@ def scenario_4_incident(seeds=range(1, 6), n_target=12) -> Dict[str, Any]:
 def scenario_5_conventional_vs_ours(seeds=range(1, 6)) -> Dict[str, Any]:
     """Same city, same traffic, same accident (+ one ambulance): conventional vs our multi-agent system.
     Conventional = fixed-time signals, drivers re-route only when the closed road is the next one, no preemption."""
-    from src.demo import _run, DEFAULT_CLOSED
+    from stms.demo import _run, DEFAULT_CLOSED
     runs = {"Conventional": [], "Ours (STMS)": []}
     for sd in seeds:
         for label, variant in (("Conventional", "conventional"), ("Ours (STMS)", "ours")):
@@ -235,7 +235,7 @@ def _eval_policy(params, seeds, rate=0.4, duration=300):
 
 
 def scenario_6_hill_climbing(train_seeds=(1, 2, 3), val_seeds=(11, 12, 13, 14, 15)) -> Dict[str, Any]:
-    from src.agents.coordinator_agent import CentralCoordinatorAgent
+    from stms.agents.coordinator_agent import CentralCoordinatorAgent
     sim = make_sim()
     coord = sim.coordinator
     coord.intersection_ids = list(sim.intersections)

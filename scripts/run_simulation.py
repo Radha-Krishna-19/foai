@@ -20,13 +20,14 @@ if sys.platform.startswith("win"):
     except Exception:
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, ROOT)
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from src import scenarios as S
+from stms import scenarios as S
 
 console = Console()
 

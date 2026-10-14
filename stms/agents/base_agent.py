@@ -5,7 +5,7 @@ Base agent: the Sense -> Reason -> Act cycle shared by every agent in the system
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from src.protocols.message import ACLMessage, MessageBroker, Performative
+from stms.protocols.message import ACLMessage, MessageBroker, Performative
 
 
 class AgentType(str, Enum):

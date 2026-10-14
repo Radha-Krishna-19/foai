@@ -11,9 +11,9 @@ which adds the expected arrivals to that axis' pressure (green-wave hand-off).
 """
 
 from typing import Any, Dict, List, Optional, Tuple
-from src.agents.base_agent import BaseAgent, AgentType
-from src.algorithms.max_pressure import MaxPressureController, SignalPhase, Decision, axis_of, phase_for
-from src.protocols.message import MessageBroker, Performative
+from stms.agents.base_agent import BaseAgent, AgentType
+from stms.algorithms.max_pressure import MaxPressureController, SignalPhase, Decision, axis_of, phase_for
+from stms.protocols.message import MessageBroker, Performative
 
 DEFAULT_PARAMS = dict(min_green_time=5.0, max_green_time=30.0, yellow_time=3.0,
                       starvation_weight=0.5, switch_threshold=1.0)

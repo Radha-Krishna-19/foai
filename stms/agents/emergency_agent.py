@@ -12,11 +12,11 @@ so the only thing that can stop it is a red signal - exactly what preemption rem
 """
 
 from typing import Any, Dict, List, Set
-from src.agents.vehicle_agent import VehicleAgent
-from src.agents.base_agent import AgentType
-from src.algorithms.search_astar import AStarRouter
-from src.environment.road_network import RoadNetwork
-from src.protocols.message import MessageBroker, Performative
+from stms.agents.vehicle_agent import VehicleAgent
+from stms.agents.base_agent import AgentType
+from stms.algorithms.search_astar import AStarRouter
+from stms.environment.road_network import RoadNetwork
+from stms.protocols.message import MessageBroker, Performative
 
 
 def travel_axis(network: RoadNetwork, a: str, b: str) -> str:

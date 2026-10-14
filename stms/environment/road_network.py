@@ -8,7 +8,6 @@ Owner: Member 1 (Environment & Simulation)
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 import math
-import networkx as nx
 
 BLOCKED_COST = float("inf")
 
@@ -88,13 +87,15 @@ class RoadNetwork:
     """Directed graph G = (V, E) of intersections and road segments."""
 
     def __init__(self):
-        self.graph = nx.DiGraph()
+        self._succ: Dict[str, List[str]] = {}   # adjacency lists (directed graph)
+        self._pred: Dict[str, List[str]] = {}
         self.node_positions: Dict[str, Tuple[float, float]] = {}
         self.segments: Dict[Tuple[str, str], RoadSegment] = {}
         self._by_id: Dict[str, RoadSegment] = {}
 
     def add_intersection(self, node_id: str, x: float, y: float):
-        self.graph.add_node(node_id, pos=(x, y))
+        self._succ.setdefault(node_id, [])
+        self._pred.setdefault(node_id, [])
         self.node_positions[node_id] = (x, y)
 
     def add_road(self, source: str, target: str, length_meters: Optional[float] = None,
@@ -105,7 +106,8 @@ class RoadNetwork:
                           length_meters=length_meters, speed_limit_mps=speed_limit_mps, capacity=capacity)
         self.segments[(source, target)] = seg
         self._by_id[seg.segment_id] = seg
-        self.graph.add_edge(source, target, segment=seg, weight=seg.free_flow_time)
+        self._succ.setdefault(source, []).append(target)
+        self._pred.setdefault(target, []).append(source)
         return seg
 
     def get_segment(self, source: str, target: str) -> Optional[RoadSegment]:
@@ -115,16 +117,15 @@ class RoadNetwork:
         return self._by_id.get(seg_id)
 
     def get_incoming_segments(self, node: str) -> List[RoadSegment]:
-        return [self.segments[(u, node)] for u in self.graph.predecessors(node)]
+        return [self.segments[(u, node)] for u in self._pred.get(node, [])]
 
     def get_outgoing_segments(self, node: str) -> List[RoadSegment]:
-        return [self.segments[(node, v)] for v in self.graph.successors(node)]
+        return [self.segments[(node, v)] for v in self._succ.get(node, [])]
 
     def set_incident(self, source: str, target: str, is_blocked: bool):
         seg = self.get_segment(source, target)
         if seg:
             seg.is_blocked = is_blocked
-            self.graph[source][target]["weight"] = BLOCKED_COST if is_blocked else seg.free_flow_time
 
     def set_slowdown(self, source: str, target: str, speed_mps: Optional[float]):
         """Partial incident (e.g. one lane closed): vehicles can pass but only at `speed_mps`."""

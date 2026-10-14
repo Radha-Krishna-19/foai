@@ -13,10 +13,10 @@ The coordinator never switches a signal itself - local control stays decentralis
 """
 
 from typing import Any, Callable, Dict, List, Optional, Tuple
-from src.agents.base_agent import BaseAgent, AgentType
-from src.algorithms.hill_climbing import ParameterSpace, SIGNAL_PARAMETER_GRID, hill_climb, HillClimbResult
-from src.environment.road_network import RoadNetwork
-from src.protocols.message import MessageBroker, Performative
+from stms.agents.base_agent import BaseAgent, AgentType
+from stms.algorithms.hill_climbing import ParameterSpace, SIGNAL_PARAMETER_GRID, hill_climb, HillClimbResult
+from stms.environment.road_network import RoadNetwork
+from stms.protocols.message import MessageBroker, Performative
 
 
 class CentralCoordinatorAgent(BaseAgent):

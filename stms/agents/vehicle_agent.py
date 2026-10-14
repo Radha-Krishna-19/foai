@@ -15,10 +15,10 @@ Beliefs change only through (a) TMC broadcasts or (b) its own sensors when it re
 """
 
 from typing import Any, Dict, List, Optional
-from src.agents.base_agent import BaseAgent, AgentType
-from src.algorithms.search_astar import AStarRouter
-from src.environment.road_network import RoadNetwork, RoadSegment
-from src.protocols.message import MessageBroker, Performative
+from stms.agents.base_agent import BaseAgent, AgentType
+from stms.algorithms.search_astar import AStarRouter
+from stms.environment.road_network import RoadNetwork, RoadSegment
+from stms.protocols.message import MessageBroker, Performative
 
 
 class VehicleAgent(BaseAgent):

@@ -17,9 +17,9 @@ Owner: Member 1 (Environment & Simulation)
 """
 
 from typing import Dict, Tuple
-from src.environment.road_network import RoadNetwork
-from src.agents.intersection_agent import IntersectionAgent
-from src.protocols.message import MessageBroker
+from stms.environment.road_network import RoadNetwork
+from stms.agents.intersection_agent import IntersectionAgent
+from stms.protocols.message import MessageBroker
 
 
 def _int_id(r: int, c: int, big: bool) -> str:
@@ -28,10 +28,13 @@ def _int_id(r: int, c: int, big: bool) -> str:
 
 def build_grid_network(broker: MessageBroker, rows: int = 2, cols: int = 2, mode: str = "MAX_PRESSURE",
                        spacing: float = 200.0, capacity: int = 20, feeder_capacity: int = 25,
-                       controller_params: Dict = None, green_wave: bool = True
+                       controller_params: Dict = None, green_wave: bool = True,
+                       feeder_length: float = None
                        ) -> Tuple[RoadNetwork, Dict[str, IntersectionAgent]]:
+    """feeder_length: length of the entry/exit roads on the boundary (default = spacing)."""
     big = rows > 10 or cols > 10
     net = RoadNetwork()
+    fl = spacing if feeder_length is None else feeder_length
     top = (rows - 1) * spacing
 
     def pos(r, c):
@@ -43,15 +46,15 @@ def build_grid_network(broker: MessageBroker, rows: int = 2, cols: int = 2, mode
             x, y = pos(r, c)
             net.add_intersection(_int_id(r, c, big), x, y)
     for c in range(cols):
-        net.add_intersection(f"N{c}", c * spacing, top + spacing)
-        net.add_intersection(f"S{c}", c * spacing, -spacing)
+        net.add_intersection(f"N{c}", c * spacing, top + fl)
+        net.add_intersection(f"S{c}", c * spacing, -fl)
     for r in range(rows):
-        net.add_intersection(f"W{r}", -spacing, top - r * spacing)
-        net.add_intersection(f"E{r}", cols * spacing, top - r * spacing)
+        net.add_intersection(f"W{r}", -fl, top - r * spacing)
+        net.add_intersection(f"E{r}", (cols - 1) * spacing + fl, top - r * spacing)
 
-    def both(a, b, cap):
-        net.add_road(a, b, length_meters=spacing, capacity=cap)
-        net.add_road(b, a, length_meters=spacing, capacity=cap)
+    def both(a, b, cap, length=spacing):
+        net.add_road(a, b, length_meters=length, capacity=cap)
+        net.add_road(b, a, length_meters=length, capacity=cap)
 
     for r in range(rows):
         for c in range(cols):
@@ -61,11 +64,11 @@ def build_grid_network(broker: MessageBroker, rows: int = 2, cols: int = 2, mode
             if r + 1 < rows:
                 both(me, _int_id(r + 1, c, big), capacity)
     for c in range(cols):
-        both(f"N{c}", _int_id(0, c, big), feeder_capacity)
-        both(f"S{c}", _int_id(rows - 1, c, big), feeder_capacity)
+        both(f"N{c}", _int_id(0, c, big), feeder_capacity, fl)
+        both(f"S{c}", _int_id(rows - 1, c, big), feeder_capacity, fl)
     for r in range(rows):
-        both(f"W{r}", _int_id(r, 0, big), feeder_capacity)
-        both(f"E{r}", _int_id(r, cols - 1, big), feeder_capacity)
+        both(f"W{r}", _int_id(r, 0, big), feeder_capacity, fl)
+        both(f"E{r}", _int_id(r, cols - 1, big), feeder_capacity, fl)
 
     # intersection agents
     agents: Dict[str, IntersectionAgent] = {}

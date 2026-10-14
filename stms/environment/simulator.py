@@ -13,13 +13,13 @@ Tick order (synchronous, deterministic for a given seed):
 from typing import Any, Callable, Dict, List, Optional, Tuple
 import random
 
-from src.environment.road_network import RoadNetwork
-from src.agents.intersection_agent import IntersectionAgent
-from src.agents.vehicle_agent import VehicleAgent
-from src.agents.emergency_agent import EmergencyVehicleAgent
-from src.agents.coordinator_agent import CentralCoordinatorAgent
-from src.algorithms.search_astar import AStarRouter
-from src.protocols.message import MessageBroker
+from stms.environment.road_network import RoadNetwork
+from stms.agents.intersection_agent import IntersectionAgent
+from stms.agents.vehicle_agent import VehicleAgent
+from stms.agents.emergency_agent import EmergencyVehicleAgent
+from stms.agents.coordinator_agent import CentralCoordinatorAgent
+from stms.algorithms.search_astar import AStarRouter
+from stms.protocols.message import MessageBroker
 
 
 class SimulationMetrics:

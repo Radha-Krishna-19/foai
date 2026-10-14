@@ -1,3 +1,2 @@
-networkx>=3.0
-rich>=13.0
-matplotlib>=3.7
+matplotlib>=3.7   # charts in scripts/generate_results.py
+rich>=13.0        # console output of scripts/run_simulation.py

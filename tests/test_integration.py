@@ -9,9 +9,9 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.algorithms.max_pressure import SignalPhase, axis_of
-from src.protocols.message import ACLMessage, Performative
-from src.scenarios import make_sim, OD_2x2
+from stms.algorithms.max_pressure import SignalPhase, axis_of
+from stms.protocols.message import ACLMessage, Performative
+from stms.scenarios import make_sim, OD_2x2
 from tests._record import record
 
 
@@ -105,7 +105,7 @@ class TestSimulationInvariants(unittest.TestCase):
     def test_IT08_conservation_and_capacity(self):
         """IT-08: every vehicle is on at most one road, no road exceeds capacity, and all vehicles arrive"""
         sim = make_sim(3, 3)
-        from src.scenarios import boundary_od_pairs
+        from stms.scenarios import boundary_od_pairs
         sim.spawn_poisson_demand(boundary_od_pairs(3, 3), 0.6, 300, random.Random(2))
         worst = 0
         while not sim.all_done() and sim.sim_time < 3000:
